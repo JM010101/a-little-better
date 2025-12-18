@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { Container } from '@/components/layout/container'
 import { ScrollParallax } from '@/components/3d/ScrollParallax'
 import { SectionTransition } from '@/components/3d/SectionTransition'
@@ -66,7 +67,10 @@ const Features = () => {
               className="text-xl text-gray-600 max-w-3xl mx-auto"
             >
               Our platform helps teams track, measure, and optimize small improvements that compound into measurable results. 
-              Built specifically for team collaboration and continuous improvement workflows.
+              Built specifically for team collaboration and continuous improvement workflows.{' '}
+              <Link href="/continuous-improvement-framework" className="text-primary-600 hover:text-primary-700 font-semibold underline">
+                Learn about our framework →
+              </Link>
             </motion.p>
           </div>
         </SectionTransition>

@@ -65,16 +65,16 @@ const Hero = () => {
           
           {/* Main Headline with neon effect - Critical for LCP, render immediately without animations */}
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-            Continuous Improvement{' '}
+            A continuous improvement platform for teams who want{' '}
             <span className="neon-text-cyan relative inline-block">
-              Platform for Teams
+              measurable progress, not big rewrites
               <div className="absolute -bottom-2 left-0 right-0 h-1 bg-neon-cyan rounded-full neon-border"></div>
             </span>
           </h1>
           
           {/* Subheadline */}
           <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Join the early access waitlist for the platform that helps teams make small, measurable improvements that compound into extraordinary results.
+            A Little Better helps small teams and operators improve their systems incrementally instead of relying on risky, all-or-nothing overhauls. The platform focuses on small, intentional changes that compound over time, making progress visible, measurable, and sustainable. Join the early access waitlist to help shape a tool built for continuous improvement in real-world teams.
           </p>
           
           {/* CTA Buttons */}
