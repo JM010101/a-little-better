@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     await Analytics.trackEvent({
       event_type,
       page_path,
-      user_agent: userAgent,
+      user_agent: userAgent ?? undefined,
       ip_address: ipAddress,
       metadata,
     })
