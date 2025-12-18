@@ -55,34 +55,35 @@ src/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Supabase account
 
 ### Local Development
 
 1. **Clone and install:**
+
    ```bash
    npm install
    ```
-
 2. **Set up environment variables:**
    Create a `.env.local` file:
+
    ```bash
    # Supabase Configuration
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   
+
    # Google Analytics (Optional)
    NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
-   
+
    # App Settings
    NODE_ENV=development
    NEXT_PUBLIC_APP_URL=http://localhost:3000
    ```
-
 3. **Set up Supabase database:**
    Run these SQL commands in your Supabase SQL editor:
+
    ```sql
    -- Analytics events tracking
    CREATE TABLE analytics_events (
@@ -94,7 +95,7 @@ src/
        metadata JSONB,
        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
    );
-   
+
    -- Early user interest capture
    CREATE TABLE early_users (
        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -103,23 +104,24 @@ src/
        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
    );
    ```
-
 4. **Start development server:**
+
    ```bash
    npm run dev
    ```
-
 5. **Visit http://localhost:3000**
 
 ## 📊 Analytics Features
 
 ### Automatic Tracking
+
 - **Page Views** - Every homepage visit
 - **Scroll Depth** - 25%, 50%, 75% scroll milestones
 - **Button Clicks** - All CTA button interactions
 - **Form Submissions** - Waitlist signups
 
 ### Supabase Dashboard
+
 - Real-time visitor analytics
 - Conversion tracking
 - User behavior insights
@@ -127,11 +129,13 @@ src/
 ## 🎨 Design System
 
 ### Brand Colors
+
 - **Primary**: Blue shades for main CTAs and branding
-- **Secondary**: Gray shades for text and backgrounds  
+- **Secondary**: Gray shades for text and backgrounds
 - **Accent**: Yellow/Orange for highlights and emphasis
 
 ### Components
+
 - **Button**: Multiple variants with hover effects
 - **Input**: Accessible form components
 - **Logo**: Scalable ALB logo component
@@ -188,6 +192,7 @@ NEXT_PUBLIC_APP_URL=https://a-little-better.com
 ## 📊 Analytics Schema
 
 ### analytics_events
+
 - `id` - UUID primary key
 - `event_type` - Type of event (page_view, click, scroll, form_submit)
 - `page_path` - URL path where event occurred
@@ -197,6 +202,7 @@ NEXT_PUBLIC_APP_URL=https://a-little-better.com
 - `created_at` - Timestamp
 
 ### early_users
+
 - `id` - UUID primary key
 - `email` - User email address (unique)
 - `source` - Traffic source identifier
@@ -205,6 +211,7 @@ NEXT_PUBLIC_APP_URL=https://a-little-better.com
 ## 🚀 Post-MVP Roadmap
 
 The MVP architecture supports easy expansion:
+
 - **Additional Pages** - About, Services, Pricing
 - **User Authentication** - Supabase Auth integration
 - **Blog System** - Content marketing platform
@@ -214,7 +221,7 @@ The MVP architecture supports easy expansion:
 ## 📞 Support
 
 - **Website**: [a-little-better.com](https://a-little-better.com)
-- **Email**: hello@a-little-better.com
+- **Email**: founder@a-little-better.com
 
 ---
 

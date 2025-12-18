@@ -174,8 +174,8 @@ const CTA = () => {
           >
             <p className="text-sm">
               Questions? Email us at{' '}
-              <a href="mailto:hello@a-little-better.com" className="text-white underline hover:text-neon-cyan transition-colors">
-                hello@a-little-better.com
+              <a href="mailto:founder@a-little-better.com" className="text-white underline hover:text-neon-cyan transition-colors">
+                founder@a-little-better.com
               </a>
             </p>
           </motion.div>
