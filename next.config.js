@@ -14,22 +14,12 @@ const nextConfig = {
   },
   compress: true,
   poweredByHeader: false,
-  webpack: (config, { dev, isServer }) => {
+  webpack: (config, { dev }) => {
     // Use memory caching in development to avoid EBUSY errors on Windows
     if (dev) {
       config.cache = {
         type: 'memory',
       }
-    }
-    
-    // Exclude React Three Fiber from SSR to avoid React 19 compatibility issues
-    if (isServer) {
-      config.externals = config.externals || []
-      config.externals.push({
-        '@react-three/fiber': 'commonjs @react-three/fiber',
-        '@react-three/drei': 'commonjs @react-three/drei',
-        'three': 'commonjs three',
-      })
     }
     
     return config

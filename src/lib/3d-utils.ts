@@ -1,22 +1,6 @@
 /**
- * Shared 3D utility functions
+ * Shared utility functions for 3D effects (CSS-based)
  */
-
-import * as THREE from 'three'
-
-export function createNeonMaterial(color: string, intensity: number = 1): THREE.MeshStandardMaterial {
-  return new THREE.MeshStandardMaterial({
-    color: color,
-    emissive: color,
-    emissiveIntensity: intensity,
-    metalness: 0.8,
-    roughness: 0.2,
-  })
-}
-
-export function createGlowGeometry(radius: number, segments: number = 32): THREE.SphereGeometry {
-  return new THREE.SphereGeometry(radius, segments, segments)
-}
 
 export function lerp(start: number, end: number, factor: number): number {
   return start + (end - start) * factor
