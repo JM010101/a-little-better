@@ -44,9 +44,49 @@ module.exports = {
           800: '#78350f',
           900: '#451a03',
         },
+        neon: {
+          blue: '#00d4ff',
+          cyan: '#00ffff',
+          purple: '#b400ff',
+          pink: '#ff00ff',
+          green: '#00ff88',
+          yellow: '#ffff00',
+          orange: '#ff8800',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      extend: {
+        perspective: {
+          '1000': '1000px',
+          '2000': '2000px',
+        },
+        transformStyle: {
+          '3d': 'preserve-3d',
+        },
+        backfaceVisibility: {
+          hidden: 'hidden',
+        },
+        animation: {
+          'glow': 'glow 2s ease-in-out infinite alternate',
+          'float': 'float 6s ease-in-out infinite',
+          'pulse-neon': 'pulse-neon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        },
+        keyframes: {
+          glow: {
+            '0%': { 'text-shadow': '0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor' },
+            '100%': { 'text-shadow': '0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor, 0 0 40px currentColor' },
+          },
+          float: {
+            '0%, 100%': { transform: 'translateY(0px)' },
+            '50%': { transform: 'translateY(-20px)' },
+          },
+          'pulse-neon': {
+            '0%, 100%': { opacity: '1' },
+            '50%': { opacity: '0.5' },
+          },
+        },
       },
     },
   },

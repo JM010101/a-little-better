@@ -18,6 +18,13 @@ export const metadata: Metadata = {
   authors: [{ name: 'A Little Better Team' }],
   creator: 'A Little Better',
   publisher: 'A Little Better',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' }
+    ],
+    apple: '/favicon.svg',
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -55,8 +62,8 @@ export const metadata: Metadata = {
       follow: true,
       'max-video-preview': -1,
       'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+      'max-snippet': -1
+    }
   },
 }
 
@@ -68,6 +75,29 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // React 19 compatibility: Ensure React is available before React Three Fiber loads
+              if (typeof window !== 'undefined' && !window.__REACT_READY__) {
+                window.__REACT_READY__ = false;
+                const checkReact = setInterval(() => {
+                  if (window.React || (window.__REACT__ && window.__REACT__.default)) {
+                    window.__REACT_READY__ = true;
+                    clearInterval(checkReact);
+                  }
+                }, 50);
+                setTimeout(() => {
+                  clearInterval(checkReact);
+                  window.__REACT_READY__ = true;
+                }, 2000);
+              }
+            `,
+          }}
+        />
         <GoogleAnalytics />
         <StructuredData data={[organizationSchema, websiteSchema, serviceSchema]} />
       </head>

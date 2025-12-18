@@ -21,6 +21,17 @@ const nextConfig = {
         type: 'memory',
       }
     }
+    
+    // Exclude React Three Fiber from SSR to avoid React 19 compatibility issues
+    if (isServer) {
+      config.externals = config.externals || []
+      config.externals.push({
+        '@react-three/fiber': 'commonjs @react-three/fiber',
+        '@react-three/drei': 'commonjs @react-three/drei',
+        'three': 'commonjs three',
+      })
+    }
+    
     return config
   },
   async headers() {

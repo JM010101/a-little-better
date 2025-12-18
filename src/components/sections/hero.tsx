@@ -3,6 +3,19 @@
 import { Container } from '@/components/layout/container'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/logo'
+import { FloatingElements } from '@/components/3d/FloatingElements'
+import { CSS3DScene } from '@/components/3d/CSS3DScene'
+import { motion } from 'framer-motion'
+import { prefersReducedMotion } from '@/lib/performance'
+
+// Using CSS 3D for React 19 compatibility
+// React Three Fiber has compatibility issues with React 19
+// To use React Three Fiber when it supports React 19, use:
+// import dynamic from 'next/dynamic'
+// const HeroScene = dynamic(
+//   () => import('@/components/3d/HeroScene').then(mod => ({ default: mod.HeroScene })),
+//   { ssr: false, loading: () => <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-primary-900 to-purple-900" /> }
+// )
 
 const Hero = () => {
   const handleClick = (buttonId: string) => {
@@ -17,61 +30,112 @@ const Hero = () => {
     }).catch(() => {})
   }
 
+  const reducedMotion = prefersReducedMotion()
+
   return (
-    <section className="section-padding bg-gradient-to-br from-blue-600 via-primary-600 to-primary-700 text-white relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-black/10"></div>
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%3E%3Cg%20fill%3D%22rgba(255,255,255,0.05)%22%3E%3Cpath%20d%3D%22M0%200h20v20H0z%22/%3E%3C/g%3E%3C/svg%3E')] opacity-50"></div>
+    <section className="section-padding bg-gradient-to-br from-blue-900 via-primary-900 to-purple-900 text-white relative overflow-hidden min-h-screen flex items-center">
+      {/* 3D Background Scene - Using CSS 3D fallback for React 19 compatibility */}
+      <div className="absolute inset-0 z-0">
+        <CSS3DScene />
+      </div>
       
-      <Container className="relative">
+      {/* Overlay Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60 z-10"></div>
+      
+      <Container className="relative z-20">
         <div className="text-center max-w-5xl mx-auto">
-          {/* Logo */}
-          <div className="flex justify-center mb-8">
-            <Logo size="xl" />
-          </div>
+          {/* Logo with 3D effect */}
+          <FloatingElements intensity={0.5}>
+            <motion.div
+              initial={reducedMotion ? {} : { opacity: 0, y: 20 }}
+              animate={reducedMotion ? {} : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="flex justify-center mb-8"
+            >
+              <Logo size="xl" />
+            </motion.div>
+          </FloatingElements>
           
-          {/* Main Headline */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+          {/* Main Headline with neon effect */}
+          <motion.h1
+            initial={reducedMotion ? {} : { opacity: 0, y: 30 }}
+            animate={reducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
+          >
             A little better goes a{' '}
-            <span className="text-accent-300 relative">
+            <span className="neon-text-cyan relative inline-block">
               long way
-              <div className="absolute -bottom-2 left-0 right-0 h-1 bg-accent-400 rounded-full"></div>
+              <motion.div
+                initial={reducedMotion ? {} : { scaleX: 0 }}
+                animate={reducedMotion ? {} : { scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="absolute -bottom-2 left-0 right-0 h-1 bg-neon-cyan rounded-full neon-border"
+              ></motion.div>
             </span>
-          </h1>
+          </motion.h1>
           
           {/* Subheadline */}
-          <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <motion.p
+            initial={reducedMotion ? {} : { opacity: 0, y: 20 }}
+            animate={reducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed"
+          >
             Transform your business with small, intentional improvements that create lasting impact. 
             Discover how incremental changes compound into extraordinary results.
-          </p>
+          </motion.p>
           
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              size="xl"
-              className="bg-white text-primary-600 hover:bg-gray-100 shadow-lg hover:shadow-xl font-bold"
-            >
-              Join the Waitlist
-            </Button>
-            <Button 
-              variant="outline"
-              size="xl"
-              className="border-white text-white hover:bg-white/10 backdrop-blur-sm"
-            >
-              Learn More
-            </Button>
-          </div>
+          {/* CTA Buttons with 3D effect */}
+          <motion.div
+            initial={reducedMotion ? {} : { opacity: 0, y: 20 }}
+            animate={reducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          >
+            <FloatingElements intensity={0.3}>
+              <Button 
+                size="xl"
+                onClick={() => handleClick('hero-cta-primary')}
+                className="card-3d bg-white text-primary-600 hover:bg-gray-100 shadow-lg hover:shadow-xl font-bold depth-shadow-lg neon-border border-neon-blue"
+              >
+                Join the Waitlist
+              </Button>
+            </FloatingElements>
+            <FloatingElements intensity={0.3}>
+              <Button 
+                variant="outline"
+                size="xl"
+                onClick={() => handleClick('hero-cta-secondary')}
+                className="card-3d border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm neon-border"
+              >
+                Learn More
+              </Button>
+            </FloatingElements>
+          </motion.div>
           
           {/* Trust Indicators */}
-          <div className="mt-12 text-blue-200">
+          <motion.div
+            initial={reducedMotion ? {} : { opacity: 0 }}
+            animate={reducedMotion ? {} : { opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="mt-12 text-blue-200"
+          >
             <p className="text-sm mb-4">Trusted by forward-thinking teams</p>
             <div className="flex flex-wrap justify-center items-center gap-8 opacity-70">
-              <div className="text-lg font-semibold">Company A</div>
-              <div className="text-lg font-semibold">Company B</div>
-              <div className="text-lg font-semibold">Company C</div>
-              <div className="text-lg font-semibold">Company D</div>
+              {['Company A', 'Company B', 'Company C', 'Company D'].map((company, i) => (
+                <motion.div
+                  key={i}
+                  initial={reducedMotion ? {} : { opacity: 0, scale: 0.8 }}
+                  animate={reducedMotion ? {} : { opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 1 + i * 0.1 }}
+                  className="text-lg font-semibold"
+                >
+                  {company}
+                </motion.div>
+              ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </Container>
     </section>
