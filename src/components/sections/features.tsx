@@ -12,26 +12,26 @@ const Features = () => {
   const features = [
     {
       Icon: TargetIcon,
-      title: "Focused Improvements",
-      description: "Identify the small changes that will have the biggest impact on your business outcomes.",
+      title: "Team-Focused Improvements",
+      description: "Identify and prioritize improvements that matter most to your team's goals and outcomes.",
       color: '#00d4ff'
     },
     {
       Icon: ChartIcon,
-      title: "Measurable Results",
-      description: "Track how small improvements compound over time to create significant business growth.",
+      title: "Team Metrics & Tracking",
+      description: "Track how your team's improvements compound over time with shared dashboards and team-specific metrics.",
       color: '#00ff88'
     },
     {
       Icon: BoltIcon,
-      title: "Quick Implementation",
-      description: "Get started immediately with changes that require minimal effort but deliver maximum value.",
+      title: "Collaborative Workflows",
+      description: "Enable your team to implement improvements quickly with built-in collaboration tools and workflows.",
       color: '#ffff00'
     },
     {
       Icon: RefreshIcon,
-      title: "Continuous Optimization",
-      description: "Build a culture of ongoing improvement that keeps your business ahead of the competition.",
+      title: "Continuous Improvement Platform",
+      description: "Build a culture of ongoing improvement with a platform designed specifically for team-based continuous improvement.",
       color: '#b400ff'
     }
   ]
@@ -56,7 +56,7 @@ const Features = () => {
               transition={{ duration: 0.6 }}
               className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 neon-text-blue"
             >
-              Why A Little Better Works
+              Built for Teams Who Want Continuous Improvement
             </motion.h2>
             <motion.p
               initial={reducedMotion ? {} : { opacity: 0, y: 20 }}
@@ -65,8 +65,8 @@ const Features = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl text-gray-600 max-w-3xl mx-auto"
             >
-              Small, consistent improvements compound over time to create remarkable transformations. 
-              Here's how we help you harness this power.
+              Our platform helps teams track, measure, and optimize small improvements that compound into measurable results. 
+              Built specifically for team collaboration and continuous improvement workflows.
             </motion.p>
           </div>
         </SectionTransition>

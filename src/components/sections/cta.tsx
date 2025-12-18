@@ -86,7 +86,7 @@ const CTA = () => {
               transition={{ duration: 0.6 }}
               className="text-4xl md:text-5xl font-bold mb-6 neon-text-cyan"
             >
-              Ready to Make Things Better?
+              Join the Early Access Waitlist
             </motion.h2>
             <motion.p
               initial={reducedMotion ? {} : { opacity: 0, y: 20 }}
@@ -95,8 +95,8 @@ const CTA = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl text-blue-100 mb-8"
             >
-              Join thousands of businesses who have discovered the power of incremental improvement. 
-              Start your journey today and see how a little better truly goes a long way.
+              Be among the first teams to access our continuous improvement platform. 
+              Get notified when we launch.
             </motion.p>
           </SectionTransition>
           

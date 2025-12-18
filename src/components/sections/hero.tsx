@@ -65,17 +65,16 @@ const Hero = () => {
           
           {/* Main Headline with neon effect - Critical for LCP, render immediately without animations */}
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-            A little better goes a{' '}
+            Continuous Improvement{' '}
             <span className="neon-text-cyan relative inline-block">
-              long way
+              Platform for Teams
               <div className="absolute -bottom-2 left-0 right-0 h-1 bg-neon-cyan rounded-full neon-border"></div>
             </span>
           </h1>
           
           {/* Subheadline */}
           <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Transform your business with small, intentional improvements that create lasting impact. 
-            Discover how incremental changes compound into extraordinary results.
+            Join the early access waitlist for the platform that helps teams make small, measurable improvements that compound into extraordinary results.
           </p>
           
           {/* CTA Buttons */}

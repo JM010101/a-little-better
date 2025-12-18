@@ -14,11 +14,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'A Little Better - A little better goes a long way',
+    default: 'Continuous Improvement Platform for Teams | Early Access Waitlist',
     template: '%s | A Little Better'
   },
-  description: 'A little better goes a long way. Transform your business with small improvements that create lasting impact.',
-  keywords: ['business improvement', 'optimization', 'efficiency', 'SaaS', 'productivity'],
+  description: 'Join the early access waitlist for a continuous improvement platform designed for teams. Track small improvements that compound into measurable results.',
+  keywords: ['continuous improvement platform', 'team improvement software', 'early access waitlist', 'continuous improvement tools', 'team productivity platform'],
   authors: [{ name: 'A Little Better Team' }],
   creator: 'A Little Better',
   publisher: 'A Little Better',
@@ -39,8 +39,8 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://a-little-better.com',
-    title: 'A Little Better - A little better goes a long way',
-    description: 'A little better goes a long way. Transform your business with small improvements that create lasting impact.',
+    title: 'Continuous Improvement Platform for Teams | Early Access Waitlist',
+    description: 'Join the early access waitlist for a continuous improvement platform designed for teams. Track small improvements that compound into measurable results.',
     siteName: 'A Little Better',
     images: [
       {
@@ -53,8 +53,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'A Little Better - A little better goes a long way',
-    description: 'A little better goes a long way. Transform your business with small improvements that create lasting impact.',
+    title: 'Continuous Improvement Platform for Teams | Early Access Waitlist',
+    description: 'Join the early access waitlist for a continuous improvement platform designed for teams. Track small improvements that compound into measurable results.',
     creator: '@alittlebetter',
     images: ['/og-image.png'],
   },

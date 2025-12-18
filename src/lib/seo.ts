@@ -6,7 +6,7 @@ export const organizationSchema = {
   alternateName: 'ALB',
   url: 'https://a-little-better.com',
   logo: 'https://a-little-better.com/logo.png',
-  description: 'A little better goes a long way. Transform your business with small improvements that create lasting impact.',
+  description: 'Early access waitlist for a continuous improvement platform for teams',
   foundingDate: '2023',
   industry: 'Software as a Service (SaaS)',
   sameAs: [
@@ -20,7 +20,7 @@ export const websiteSchema = {
   '@type': 'WebSite',
   name: 'A Little Better',
   url: 'https://a-little-better.com',
-  description: 'A little better goes a long way. Transform your business with small improvements that create lasting impact.',
+  description: 'Early access waitlist for a continuous improvement platform for teams',
   publisher: {
     '@type': 'Organization',
     name: 'A Little Better'
@@ -35,13 +35,13 @@ export const websiteSchema = {
 export const serviceSchema = {
   '@context': 'https://schema.org',
   '@type': 'Service',
-  name: 'Business Improvement Consulting',
+  name: 'Continuous Improvement Platform',
   provider: {
     '@type': 'Organization',
     name: 'A Little Better'
   },
-  description: 'SaaS platform for implementing small, measurable improvements that create significant business impact.',
-  serviceType: 'Business Consulting',
+  description: 'Early access waitlist for a continuous improvement platform for teams',
+  serviceType: 'Continuous Improvement Platform',
   areaServed: 'Worldwide',
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
@@ -51,7 +51,7 @@ export const serviceSchema = {
         '@type': 'Offer',
         itemOffered: {
           '@type': 'Service',
-          name: 'Business Optimization Platform'
+          name: 'Continuous Improvement Platform for Teams'
         }
       }
     ]
