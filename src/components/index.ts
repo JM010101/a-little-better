@@ -13,10 +13,8 @@ export { Features } from './sections/features'
 export { SocialProof } from './sections/social-proof'
 export { CTA } from './sections/cta'
 
-// 3D Components - Only export components that don't use React Three Fiber hooks directly
+// 3D Components - CSS-based 3D effects
 export { ScrollParallax } from './3d/ScrollParallax'
 export { SectionTransition } from './3d/SectionTransition'
 export { FloatingElements } from './3d/FloatingElements'
 export { LoadingState } from './3d/LoadingState'
-// Note: HeroScene, CTAParticles, GeometricShapes, ParticleField, NeonGrid are not exported
-// to prevent React Three Fiber initialization. They are only used internally via dynamic imports.

@@ -93,28 +93,6 @@ export default function RootLayout({
         <StructuredData data={[organizationSchema, websiteSchema, serviceSchema]} />
       </head>
       <body className={inter.className}>
-        <Script
-          id="react-compatibility"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              // React 19 compatibility: Ensure React is available before React Three Fiber loads
-              if (typeof window !== 'undefined' && !window.__REACT_READY__) {
-                window.__REACT_READY__ = false;
-                const checkReact = setInterval(() => {
-                  if (window.React || (window.__REACT__ && window.__REACT__.default)) {
-                    window.__REACT_READY__ = true;
-                    clearInterval(checkReact);
-                  }
-                }, 50);
-                setTimeout(() => {
-                  clearInterval(checkReact);
-                  window.__REACT_READY__ = true;
-                }, 2000);
-              }
-            `,
-          }}
-        />
         <GoogleAnalytics />
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-accent-50">
           <PageAnalytics />
