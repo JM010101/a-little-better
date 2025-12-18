@@ -1,12 +1,16 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import { GoogleAnalytics } from '@/components/analytics/google-analytics'
 import { PageAnalytics } from '@/components/analytics/page-analytics'
 import { StructuredData } from '@/components/analytics/structured-data'
 import { organizationSchema, websiteSchema, serviceSchema } from '@/lib/seo'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -78,7 +82,12 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/favicon.svg" />
-        <script
+        <StructuredData data={[organizationSchema, websiteSchema, serviceSchema]} />
+      </head>
+      <body className={inter.className}>
+        <Script
+          id="react-compatibility"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               // React 19 compatibility: Ensure React is available before React Three Fiber loads
@@ -99,9 +108,6 @@ export default function RootLayout({
           }}
         />
         <GoogleAnalytics />
-        <StructuredData data={[organizationSchema, websiteSchema, serviceSchema]} />
-      </head>
-      <body className={inter.className}>
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-accent-50">
           <PageAnalytics />
           {children}
