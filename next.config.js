@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    optimizePackageImports: ['lucide-react', '@supabase/supabase-js'],
+    optimizePackageImports: ['lucide-react', '@supabase/supabase-js', 'framer-motion'],
   },
   images: {
     formats: ['image/avif', 'image/webp'],
