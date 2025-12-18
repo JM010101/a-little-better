@@ -3,7 +3,6 @@ export const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'A Little Better',
-  alternateName: 'ALB',
   url: 'https://a-little-better.com',
   logo: 'https://a-little-better.com/logo.png',
   description: 'Early access waitlist for a continuous improvement platform for teams',

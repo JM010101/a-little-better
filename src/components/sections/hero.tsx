@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { Container } from '@/components/layout/container'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/logo'
@@ -74,7 +75,11 @@ const Hero = () => {
           
           {/* Subheadline */}
           <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-            A Little Better helps small teams and operators improve their systems incrementally instead of relying on risky, all-or-nothing overhauls. The platform focuses on small, intentional changes that compound over time, making progress visible, measurable, and sustainable. Join the early access waitlist to help shape a tool built for continuous improvement in real-world teams.
+            A Little Better helps small teams and operators improve their systems incrementally instead of relying on risky, all-or-nothing overhauls. The platform focuses on small, intentional changes that compound over time, making progress visible, measurable, and sustainable. Learn more about the philosophy behind the product in our{' '}
+            <Link href="/continuous-improvement-framework" className="text-white underline hover:text-neon-cyan transition-colors font-semibold">
+              continuous improvement framework
+            </Link>
+            .
           </p>
           
           {/* CTA Buttons */}

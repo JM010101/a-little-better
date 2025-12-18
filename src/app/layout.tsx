@@ -4,6 +4,7 @@ import Script from 'next/script'
 import { GoogleAnalytics } from '@/components/analytics/google-analytics'
 import { PageAnalytics } from '@/components/analytics/page-analytics'
 import { StructuredData } from '@/components/analytics/structured-data'
+import { Footer } from '@/components/layout/footer'
 import { organizationSchema, websiteSchema, serviceSchema } from '@/lib/seo'
 import './globals.css'
 
@@ -94,9 +95,12 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <GoogleAnalytics />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-accent-50">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-accent-50 flex flex-col">
           <PageAnalytics />
-          {children}
+          <div className="flex-grow">
+            {children}
+          </div>
+          <Footer />
         </div>
       </body>
     </html>

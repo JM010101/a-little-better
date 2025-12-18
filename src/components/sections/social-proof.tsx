@@ -71,7 +71,7 @@ const SocialProof = () => {
 
   const testimonials = [
     {
-      quote: "The small changes ALB recommended increased our team productivity by 30% in just two months.",
+      quote: "The small changes A Little Better recommended increased our team productivity by 30% in just two months.",
       author: "Sarah Chen",
       company: "TechFlow Inc.",
       role: "CEO"
