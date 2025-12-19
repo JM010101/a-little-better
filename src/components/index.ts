@@ -6,6 +6,7 @@ export { TargetIcon, ChartIcon, BoltIcon, RefreshIcon } from './ui/icons'
 
 // Layout Components
 export { Container } from './layout/container'
+export { Header } from './layout/header'
 export { Footer } from './layout/footer'
 
 // Section Components
