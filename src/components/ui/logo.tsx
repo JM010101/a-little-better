@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 interface LogoProps {
@@ -13,10 +14,10 @@ const Logo: React.FC<LogoProps> = ({
   showText = false
 }) => {
   const sizes = {
-    sm: 'w-8 h-8 text-sm',
-    md: 'w-10 h-10 text-base',
-    lg: 'w-12 h-12 text-lg',
-    xl: 'w-16 h-16 text-xl',
+    sm: 'w-8 h-8',
+    md: 'w-10 h-10',
+    lg: 'w-12 h-12',
+    xl: 'w-16 h-16',
   }
 
   const textSizes = {
@@ -28,13 +29,14 @@ const Logo: React.FC<LogoProps> = ({
 
   return (
     <div className={cn('flex items-center space-x-3', className)}>
-      <div className={cn(
-        'bg-gradient-to-r from-primary-600 to-primary-500 rounded-xl flex items-center justify-center shadow-lg',
-        sizes[size]
-      )}>
-        <span className={cn('text-white font-bold', textSizes[size])}>
-          ALB
-        </span>
+      <div className={cn('relative', sizes[size])}>
+        <Image
+          src="/logo.png"
+          alt="A Little Better Logo"
+          fill
+          className="object-contain"
+          priority
+        />
       </div>
       {showText && (
         <span className={cn('font-bold text-gray-900', textSizes[size])}>
