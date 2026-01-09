@@ -23,10 +23,14 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createServerSupabaseClient()
 
+    // Use production URL from env, or fallback to request origin
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin
+    const redirectUrl = `${appUrl}/auth/callback`
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${request.nextUrl.origin}/auth/callback`,
+        emailRedirectTo: redirectUrl,
       },
     })
 

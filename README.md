@@ -79,7 +79,8 @@ src/
 
    # App Settings
    NODE_ENV=development
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   # Use production URL for email redirects (even in development)
+   NEXT_PUBLIC_APP_URL=https://a-little-better.com
    ```
 3. **Set up Supabase database:**
    Run these SQL commands in your Supabase SQL editor:
