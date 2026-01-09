@@ -168,7 +168,7 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
           </p>
         </div>
 
-        <div className="flex justify-center gap-2 sm:gap-3">
+        <div className="flex justify-center gap-1.5 sm:gap-2 flex-wrap max-w-full">
           {code.map((digit, index) => (
             <input
               key={index}
@@ -182,7 +182,7 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={index === 0 ? handlePaste : undefined}
-              className="w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl sm:text-3xl font-bold border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-white shadow-sm hover:border-gray-400"
+              className="w-10 h-12 sm:w-11 sm:h-14 text-center text-xl sm:text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-white shadow-sm hover:border-gray-400 flex-shrink-0"
               disabled={loading}
               autoFocus={index === 0}
             />
