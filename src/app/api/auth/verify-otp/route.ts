@@ -23,10 +23,12 @@ export async function POST(request: NextRequest) {
     const supabase = await createServerSupabaseClient()
 
     // Verify OTP code
+    // Use 'magiclink' type because we're using signInWithOtp which sends magic link emails
+    // But if template shows {{ .Token }}, it will send OTP code instead
     const { data, error } = await supabase.auth.verifyOtp({
       email,
       token,
-      type: 'signup',
+      type: 'magiclink',
     })
 
     if (error) {
