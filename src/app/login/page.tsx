@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; redirected?: string }>
+  searchParams: Promise<{ error?: string; redirected?: string; message?: string }>
 }) {
   const params = await searchParams
   let errorMessage: string | null = null
@@ -36,7 +36,7 @@ export default async function LoginPage({
         break
       default:
         errorMessage = params.message 
-          ? decodeURIComponent(params.message as string)
+          ? decodeURIComponent(params.message)
           : 'Authentication failed. Please try again.'
     }
   }
