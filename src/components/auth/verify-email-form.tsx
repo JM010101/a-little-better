@@ -182,7 +182,7 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={index === 0 ? handlePaste : undefined}
-              className="w-8 h-10 sm:w-9 sm:h-11 text-center text-base sm:text-lg font-bold border-2 border-gray-300 rounded-md focus:border-primary-500 focus:ring-1 focus:ring-primary-200 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-white shadow-sm hover:border-gray-400 flex-shrink-0"
+              className="w-8 h-10 sm:w-9 sm:h-11 text-center text-base sm:text-lg font-bold border-2 border-gray-300 rounded-md focus:border-primary-500 focus:ring-1 focus:ring-primary-200 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 shadow-sm hover:border-gray-400 flex-shrink-0"
               disabled={loading}
               autoFocus={index === 0}
             />
