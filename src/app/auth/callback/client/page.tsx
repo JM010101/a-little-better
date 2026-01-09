@@ -25,12 +25,8 @@ function CallbackContent() {
       }
 
       try {
-        let sessionData = null
-        let exchangeError = null
-
         // Handle token parameter (direct from email link)
-        // Use verifyOtp to verify the token directly without going through Supabase's verify endpoint
-        // This bypasses PKCE entirely
+        // Use verifyOtp to verify the token directly - bypasses PKCE
         if (token && type === 'signup') {
           const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
             token_hash: token,
@@ -62,55 +58,63 @@ function CallbackContent() {
           }
         }
 
-        // Handle code parameter (from Supabase redirect after token verification)
-        // Supabase's verify endpoint generates PKCE codes, so we need to handle them
+        // Handle code parameter (from Supabase redirect)
+        // With detectSessionInUrl: true, Supabase should automatically detect and exchange the code
+        // But we'll also try manual exchange as fallback
         if (code) {
-          // Try to exchange code - with implicit flow configured, this should work
-          // But if Supabase generated a PKCE code, we'll get an error
-          const result = await supabase.auth.exchangeCodeForSession(code)
-          sessionData = result.data
-          exchangeError = result.error
+          // Wait a moment for detectSessionInUrl to work (if it does)
+          await new Promise(resolve => setTimeout(resolve, 500))
           
-          // If PKCE error occurs, it means Supabase's verify endpoint generated a PKCE code
-          // This happens because Supabase's email verification always uses PKCE
-          // The solution is to handle the token directly (above) instead of letting Supabase convert it
-          if (exchangeError && (exchangeError.message.includes('PKCE') || exchangeError.message.includes('code verifier') || exchangeError.message.includes('non-empty'))) {
-            setError('This confirmation link uses PKCE flow. Please use the token from the email link directly, or request a new confirmation email.')
-            setLoading(false)
-            setTimeout(() => {
-              router.push(`/login?error=pkce_enabled&message=${encodeURIComponent('Email confirmation links use PKCE. Please ensure you\'re clicking the link directly from the email.')}`)
-            }, 3000)
+          // Check if session was automatically created by detectSessionInUrl
+          const { data: { session: autoSession } } = await supabase.auth.getSession()
+          
+          if (autoSession) {
+            // detectSessionInUrl worked! Session already created
+            router.push(next)
+            router.refresh()
             return
           }
-        }
 
-        if (exchangeError) {
-          console.error('Auth callback error:', exchangeError)
-          setError(exchangeError.message)
-          setLoading(false)
+          // Manual exchange as fallback
+          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
           
-          // Redirect to login with error after a delay
-          setTimeout(() => {
-            const errorParam = exchangeError.message.includes('expired') 
-              ? 'code_expired' 
-              : exchangeError.message.includes('invalid') 
-              ? 'invalid_code'
-              : 'auth_failed'
-            router.push(`/login?error=${errorParam}&message=${encodeURIComponent(exchangeError.message)}`)
-          }, 2000)
-          return
-        }
+          if (exchangeError) {
+            console.error('Auth callback error:', exchangeError)
+            
+            // If PKCE error, it means Supabase generated a PKCE code
+            if (exchangeError.message.includes('PKCE') || exchangeError.message.includes('code verifier') || exchangeError.message.includes('non-empty')) {
+              setError('This confirmation link uses PKCE flow. Please request a new confirmation email - new emails will work correctly.')
+              setLoading(false)
+              setTimeout(() => {
+                router.push(`/login?error=pkce_enabled&message=${encodeURIComponent('Please request a new confirmation email. The link was generated with PKCE flow.')}`)
+              }, 3000)
+              return
+            }
+            
+            setError(exchangeError.message)
+            setLoading(false)
+            setTimeout(() => {
+              const errorParam = exchangeError.message.includes('expired') 
+                ? 'code_expired' 
+                : exchangeError.message.includes('invalid') 
+                ? 'invalid_code'
+                : 'auth_failed'
+              router.push(`/login?error=${errorParam}&message=${encodeURIComponent(exchangeError.message)}`)
+            }, 2000)
+            return
+          }
 
-        if (sessionData?.session) {
-          // Success! Redirect to dashboard
-          router.push(next)
-          router.refresh()
-        } else {
-          setError('Failed to create session')
-          setLoading(false)
-          setTimeout(() => {
-            router.push('/login?error=auth_failed')
-          }, 2000)
+          if (data?.session) {
+            // Success! Redirect to dashboard
+            router.push(next)
+            router.refresh()
+          } else {
+            setError('Failed to create session')
+            setLoading(false)
+            setTimeout(() => {
+              router.push('/login?error=auth_failed')
+            }, 2000)
+          }
         }
       } catch (err) {
         console.error('Unexpected error:', err)
