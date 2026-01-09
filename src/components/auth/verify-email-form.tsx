@@ -102,7 +102,7 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
         setError(data.error || 'Verification failed')
         setLoading(false)
         // Clear code on error
-        setCode(['', '', '', '', '', ''])
+        setCode(['', '', '', '', '', '', '', ''])
         inputRefs.current[0]?.focus()
         return
       }
