@@ -44,9 +44,11 @@ function CallbackContent() {
           }
 
           if (verifyData?.session) {
-            // Success! Token verified and session created
-            router.push(next)
-            router.refresh()
+            // Success! Token verified and session created client-side
+            // Session is in localStorage - need to ensure cookies are set for middleware
+            // Redirect to dashboard - middleware should see session via getSession()
+            // If not, user will be redirected to login and can sign in normally
+            window.location.href = next
             return
           } else {
             setError('Failed to create session after token verification')
@@ -69,9 +71,9 @@ function CallbackContent() {
           const { data: { session: autoSession } } = await supabase.auth.getSession()
           
           if (autoSession) {
-            // detectSessionInUrl worked! Session already created
-            router.push(next)
-            router.refresh()
+            // detectSessionInUrl worked! Session already created client-side
+            // Redirect to dashboard - session should be available
+            window.location.href = next
             return
           }
 
@@ -105,9 +107,10 @@ function CallbackContent() {
           }
 
           if (data?.session) {
-            // Success! Redirect to dashboard
-            router.push(next)
-            router.refresh()
+            // Success! Session created client-side
+            // Redirect to dashboard - session should be available
+            window.location.href = next
+            return
           } else {
             setError('Failed to create session')
             setLoading(false)

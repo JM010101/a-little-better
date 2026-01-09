@@ -32,13 +32,30 @@ export default async function AuthCallbackPage({
   }
 
   // Handle code parameter (from Supabase redirect after token verification)
-  // Note: Supabase's email verification endpoint may still use PKCE even with implicit flow
-  // So we redirect to client-side handler which can handle both flows
   if (code) {
-    // Always redirect to client-side handler for email confirmations
-    // Client-side has implicit flow configured and can handle PKCE if needed
-    redirect(`/auth/callback/client?code=${code}&type=${type}&next=${encodeURIComponent(next)}`)
-    return
+    // Try server-side exchange first - this sets cookies properly for middleware
+    // Server-side exchange works best because it sets cookies that middleware can read
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (error) {
+      console.error('Server-side exchange error:', error)
+      // If server-side fails (e.g., PKCE error), redirect to client-side handler
+      // Client-side can handle PKCE if browser storage has the verifier
+      if (error.message.includes('PKCE') || error.message.includes('code verifier') || error.message.includes('non-empty')) {
+        redirect(`/auth/callback/client?code=${code}&type=${type}&next=${encodeURIComponent(next)}`)
+        return
+      }
+      // Other errors - redirect to login
+      redirect(`/login?error=auth_failed&message=${encodeURIComponent(error.message)}`)
+      return
+    }
+
+    // Success - session created server-side, cookies set
+    // Middleware will now see the session and allow access to dashboard
+    if (data?.session) {
+      redirect(next)
+      return
+    }
   }
 
   // Check if we have a session
