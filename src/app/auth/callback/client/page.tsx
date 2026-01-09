@@ -44,10 +44,22 @@ function CallbackContent() {
 
         // Handle code parameter (from Supabase redirect after token verification)
         if (code) {
-          // Use client-side exchange which can handle PKCE properly
+          // Try to exchange code - if PKCE error, we need to handle differently
           const result = await supabase.auth.exchangeCodeForSession(code)
           sessionData = result.data
           exchangeError = result.error
+          
+          // If PKCE error, the code requires a verifier we don't have
+          // This means Supabase is using PKCE for email confirmations
+          // We need to tell user to disable PKCE in Supabase dashboard
+          if (exchangeError && (exchangeError.message.includes('PKCE') || exchangeError.message.includes('code verifier') || exchangeError.message.includes('non-empty'))) {
+            setError('PKCE is enabled for email confirmations. Please disable PKCE for email flows in Supabase Dashboard → Authentication → URL Configuration')
+            setLoading(false)
+            setTimeout(() => {
+              router.push(`/login?error=pkce_enabled&message=${encodeURIComponent('PKCE must be disabled for email confirmations. Check Supabase dashboard settings.')}`)
+            }, 3000)
+            return
+          }
         }
 
         if (exchangeError) {

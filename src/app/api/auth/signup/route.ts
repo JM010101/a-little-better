@@ -33,15 +33,17 @@ export async function POST(request: NextRequest) {
 
     // Use production URL from env, or fallback to request origin
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin
-    const redirectUrl = `${appUrl}/auth/callback`
+    // Point to our verify-email endpoint that bypasses PKCE
+    // This endpoint will handle the token directly from the email link
+    const redirectUrl = `${appUrl}/api/auth/verify-email`
 
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
-        // Disable PKCE for email confirmations to avoid code verifier issues
-        captchaToken: undefined,
+        // Note: PKCE cannot be disabled via API - must be done in Supabase Dashboard
+        // Go to: Authentication → URL Configuration → Disable PKCE for email flows
       },
     })
 

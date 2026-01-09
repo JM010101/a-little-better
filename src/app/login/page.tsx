@@ -22,8 +22,12 @@ export default async function LoginPage({
 }) {
   const params = await searchParams
   let errorMessage: string | null = null
+  const verified = params.verified === 'true'
+  const verifiedEmail = params.email as string | undefined
   
-  if (params.error) {
+  if (verified && verifiedEmail) {
+    errorMessage = null // Clear any errors, show success instead
+  } else if (params.error) {
     switch (params.error) {
       case 'auth_failed':
         errorMessage = 'Authentication failed. Please try again.'
@@ -33,6 +37,9 @@ export default async function LoginPage({
         break
       case 'invalid_code':
         errorMessage = 'Invalid confirmation link. Please check your email for the latest link.'
+        break
+      case 'pkce_enabled':
+        errorMessage = 'Email confirmation requires PKCE to be disabled in Supabase. Please contact support or check Supabase dashboard settings.'
         break
       default:
         errorMessage = params.message 
@@ -46,11 +53,16 @@ export default async function LoginPage({
       title="Welcome back"
       subtitle="Sign in to your account to continue"
     >
-      {errorMessage && (
+      {verified && verifiedEmail ? (
+        <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+          <p className="font-semibold">Email verified successfully!</p>
+          <p className="text-sm mt-1">You can now sign in with your email: {verifiedEmail}</p>
+        </div>
+      ) : errorMessage ? (
         <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
           {errorMessage}
         </div>
-      )}
+      ) : null}
       <Tabs
         tabs={[
           {
