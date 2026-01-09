@@ -18,12 +18,12 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; redirected?: string; message?: string }>
+  searchParams: Promise<{ error?: string; redirected?: string; message?: string; verified?: string; email?: string }>
 }) {
   const params = await searchParams
   let errorMessage: string | null = null
   const verified = params.verified === 'true'
-  const verifiedEmail = params.email as string | undefined
+  const verifiedEmail = params.email
   
   if (verified && verifiedEmail) {
     errorMessage = null // Clear any errors, show success instead
