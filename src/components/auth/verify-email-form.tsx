@@ -148,24 +148,29 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
           {error}
         </div>
       )}
 
-      <div>
-        <p className="text-sm text-gray-600 mb-4 text-center">
-          We've sent an 8-digit verification code to <strong>{email}</strong>
-        </p>
-        <p className="text-xs text-gray-500 mb-6 text-center">
-          Please enter the code below to verify your email address.
-        </p>
+      <div className="space-y-6">
+        <div className="text-center space-y-3">
+          <p className="text-sm text-gray-600">
+            We've sent an 8-digit verification code to
+          </p>
+          <p className="text-base font-semibold text-gray-900 break-all px-2">
+            {email}
+          </p>
+          <p className="text-xs text-gray-500 pt-1">
+            Please enter the code below to verify your email address
+          </p>
+        </div>
 
-        <div className="flex justify-center gap-2 mb-6">
+        <div className="flex justify-center gap-2 sm:gap-3">
           {code.map((digit, index) => (
-            <Input
+            <input
               key={index}
               ref={(el) => {
                 inputRefs.current[index] = el
@@ -177,7 +182,7 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={index === 0 ? handlePaste : undefined}
-              className="w-12 h-14 text-center text-2xl font-semibold"
+              className="w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl sm:text-3xl font-bold border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-white shadow-sm hover:border-gray-400"
               disabled={loading}
               autoFocus={index === 0}
             />
@@ -185,25 +190,27 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
         </div>
       </div>
 
-      <Button
-        type="submit"
-        variant="primary"
-        size="lg"
-        className="w-full"
-        disabled={loading || code.join('').length !== 8}
-      >
-        {loading ? 'Verifying...' : 'Verify Email'}
-      </Button>
-
-      <div className="text-center">
-        <button
-          type="button"
-          onClick={handleResend}
-          disabled={resending || loading}
-          className="text-sm text-primary-600 hover:text-primary-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+      <div className="space-y-4">
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className="w-full"
+          disabled={loading || code.join('').length !== 8}
         >
-          {resending ? 'Sending...' : "Didn't receive a code? Resend"}
-        </button>
+          {loading ? 'Verifying...' : 'Verify Email'}
+        </Button>
+
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={resending || loading}
+            className="text-sm text-primary-600 hover:text-primary-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {resending ? 'Sending...' : "Didn't receive a code? Resend"}
+          </button>
+        </div>
       </div>
     </form>
   )
