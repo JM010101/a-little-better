@@ -32,35 +32,13 @@ export default async function AuthCallbackPage({
   }
 
   // Handle code parameter (from Supabase redirect after token verification)
+  // Note: Supabase's email verification endpoint may still use PKCE even with implicit flow
+  // So we redirect to client-side handler which can handle both flows
   if (code) {
-    // Try server-side exchange first
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-    
-    if (error) {
-      console.error('Auth callback error:', error)
-      
-      // If PKCE error (common with email links), redirect to client-side handler
-      // Client-side can handle PKCE properly with browser storage
-      if (error.message.includes('PKCE') || error.message.includes('code verifier') || error.message.includes('non-empty')) {
-        redirect(`/auth/callback/client?code=${code}&type=${type}&next=${encodeURIComponent(next)}`)
-        return
-      }
-      
-      // Other errors - show specific message
-      const errorParam = error.message.includes('expired') 
-        ? 'code_expired' 
-        : error.message.includes('invalid') 
-        ? 'invalid_code'
-        : 'auth_failed'
-      redirect(`/login?error=${errorParam}&message=${encodeURIComponent(error.message)}`)
-      return
-    }
-
-    // Success - check if we have a session
-    if (data?.session) {
-      redirect(next)
-      return
-    }
+    // Always redirect to client-side handler for email confirmations
+    // Client-side has implicit flow configured and can handle PKCE if needed
+    redirect(`/auth/callback/client?code=${code}&type=${type}&next=${encodeURIComponent(next)}`)
+    return
   }
 
   // Check if we have a session
