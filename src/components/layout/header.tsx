@@ -44,6 +44,26 @@ export async function Header() {
           </nav>
 
           <div className="flex items-center space-x-4">
+            <a 
+              href="https://blogs.a-little-better.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hidden md:block"
+            >
+              <Button variant="ghost" size="sm">
+                Go to blog site
+              </Button>
+            </a>
+            <a 
+              href="https://apps.a-little-better.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hidden md:block"
+            >
+              <Button variant="ghost" size="sm">
+                Go to app store
+              </Button>
+            </a>
             {user ? (
               <>
                 <Link href="/profile">

@@ -55,6 +55,24 @@ export function Footer() {
                 founder@a-little-better.com
               </a>
             </p>
+            <div className="mt-6 space-y-2">
+              <a 
+                href="https://blogs.a-little-better.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Go to blog site
+              </a>
+              <a 
+                href="https://apps.a-little-better.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Go to app store
+              </a>
+            </div>
           </div>
         </div>
       </Container>

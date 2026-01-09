@@ -170,9 +170,37 @@ const CTA = () => {
             whileInView={reducedMotion ? {} : { opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="mt-12 text-blue-200"
+            className="mt-12 space-y-6"
           >
-            <p className="text-sm">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a 
+                href="https://blogs.a-little-better.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button 
+                  variant="outline"
+                  size="lg"
+                  className="card-3d border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm neon-border"
+                >
+                  Go to blog site
+                </Button>
+              </a>
+              <a 
+                href="https://apps.a-little-better.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button 
+                  variant="outline"
+                  size="lg"
+                  className="card-3d border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm neon-border"
+                >
+                  Go to app store
+                </Button>
+              </a>
+            </div>
+            <p className="text-sm text-blue-200">
               Questions? Email us at{' '}
               <a href="mailto:founder@a-little-better.com" className="text-white underline hover:text-neon-cyan transition-colors">
                 founder@a-little-better.com
