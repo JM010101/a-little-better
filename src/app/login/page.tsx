@@ -39,7 +39,7 @@ export default async function LoginPage({
         errorMessage = 'Invalid confirmation link. Please check your email for the latest link.'
         break
       case 'pkce_enabled':
-        errorMessage = 'Email confirmation requires PKCE to be disabled in Supabase. Please contact support or check Supabase dashboard settings.'
+        errorMessage = 'This confirmation link was generated with PKCE flow. Please request a new confirmation email - new emails will use implicit flow and work correctly.'
         break
       default:
         errorMessage = params.message 
