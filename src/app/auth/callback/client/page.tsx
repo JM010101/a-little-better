@@ -49,14 +49,13 @@ function CallbackContent() {
           sessionData = result.data
           exchangeError = result.error
           
-          // If PKCE error, the code requires a verifier we don't have
-          // This means Supabase is using PKCE for email confirmations
-          // We need to tell user to disable PKCE in Supabase dashboard
+          // If PKCE error still occurs, it means Supabase's verify endpoint is using PKCE
+          // This can happen if the email link was generated before we switched to implicit flow
           if (exchangeError && (exchangeError.message.includes('PKCE') || exchangeError.message.includes('code verifier') || exchangeError.message.includes('non-empty'))) {
-            setError('PKCE is enabled for email confirmations. Please disable PKCE for email flows in Supabase Dashboard → Authentication → URL Configuration')
+            setError('This confirmation link requires PKCE. Please request a new confirmation email or try signing up again.')
             setLoading(false)
             setTimeout(() => {
-              router.push(`/login?error=pkce_enabled&message=${encodeURIComponent('PKCE must be disabled for email confirmations. Check Supabase dashboard settings.')}`)
+              router.push(`/login?error=pkce_enabled&message=${encodeURIComponent('Please request a new confirmation email. The link may have been generated with PKCE flow.')}`)
             }, 3000)
             return
           }
