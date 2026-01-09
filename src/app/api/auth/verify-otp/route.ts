@@ -23,13 +23,43 @@ export async function POST(request: NextRequest) {
     const supabase = await createServerSupabaseClient()
 
     // Verify OTP code
-    // Use 'magiclink' type because we're using signInWithOtp which sends magic link emails
-    // But if template shows {{ .Token }}, it will send OTP code instead
-    const { data, error } = await supabase.auth.verifyOtp({
+    // Try different types - signInWithOtp can send OTP codes that need to be verified
+    // Try 'email' type first (for signInWithOtp), then 'signup' as fallback
+    let data = null
+    let error = null
+    
+    // Try 'email' type first (this is what signInWithOtp uses)
+    const result1 = await supabase.auth.verifyOtp({
       email,
       token,
-      type: 'magiclink',
+      type: 'email',
     })
+    
+    if (result1.error) {
+      // If 'email' type fails, try 'signup' type (in case user was created via signup)
+      const result2 = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: 'signup',
+      })
+      
+      if (result2.error) {
+        // Try 'magiclink' as last resort
+        const result3 = await supabase.auth.verifyOtp({
+          email,
+          token,
+          type: 'magiclink',
+        })
+        data = result3.data
+        error = result3.error
+      } else {
+        data = result2.data
+        error = result2.error
+      }
+    } else {
+      data = result1.data
+      error = result1.error
+    }
 
     if (error) {
       return NextResponse.json(
