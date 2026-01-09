@@ -8,15 +8,8 @@ export default async function HomePage({
 }) {
   const params = await searchParams
   
-  // Handle email confirmation token directly from email link
-  // Email links contain 'token' parameter, not 'code'
-  if (params.token && params.type === 'signup') {
-    // Use our verify-email API route that bypasses PKCE
-    redirect(`/api/auth/verify-email?token=${params.token}&type=${params.type}`)
-    return
-  }
-  
-  // Handle email confirmation code from Supabase redirect
+  // Handle email confirmation code from Supabase redirect (for magic links, OAuth, etc.)
+  // Note: Signup now uses 6-digit OTP codes, not email links
   if (params.code) {
     // Redirect to the callback handler to process the code
     redirect(`/auth/callback?code=${params.code}`)

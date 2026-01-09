@@ -44,11 +44,10 @@ export function SignupForm() {
       }
 
       setSuccess(true)
-      // Redirect to dashboard after a short delay
+      // Redirect to verification page with email
       setTimeout(() => {
-        router.push('/dashboard')
-        router.refresh()
-      }, 2000)
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`)
+      }, 1500)
     } catch (err) {
       setError('An unexpected error occurred')
       setLoading(false)
@@ -59,9 +58,9 @@ export function SignupForm() {
     return (
       <div className="text-center py-8">
         <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
-          Account created successfully! Please check your email to verify your account.
+          Account created successfully! Please check your email for the verification code.
         </div>
-        <p className="text-gray-600">Redirecting to dashboard...</p>
+        <p className="text-gray-600">Redirecting to verification page...</p>
       </div>
     )
   }

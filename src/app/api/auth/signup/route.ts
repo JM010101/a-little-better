@@ -31,34 +31,43 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createServerSupabaseClient()
 
-    // Use production URL from env, or fallback to request origin
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin
-    // Point to client-side callback handler
-    // The email link will go to Supabase verify endpoint first, then redirect here
-    // We'll handle the token directly using verifyOtp to bypass PKCE
-    const redirectUrl = `${appUrl}/auth/callback/client`
-
-    const { data, error } = await supabase.auth.signUp({
+    // Create user account first
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: redirectUrl,
-        // Note: PKCE cannot be disabled via API - must be done in Supabase Dashboard
-        // Go to: Authentication → URL Configuration → Disable PKCE for email flows
+        // Don't send email confirmation link - we'll send OTP code instead
+        emailRedirectTo: undefined,
       },
     })
 
-    if (error) {
+    if (signUpError) {
       return NextResponse.json(
-        { error: error.message },
+        { error: signUpError.message },
         { status: 400 }
       )
     }
 
+    // Send OTP code for email verification
+    const { error: otpError } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: false, // User already created above
+        // This will send a 6-digit OTP code to the email
+      },
+    })
+
+    if (otpError) {
+      // If OTP send fails, still return success since user is created
+      // They can request a new code later
+      console.error('OTP send error:', otpError)
+    }
+
     return NextResponse.json({
       success: true,
-      message: 'Account created successfully. Please check your email to verify your account.',
-      user: data.user,
+      message: 'Account created successfully. Please check your email for the 6-digit verification code.',
+      user: signUpData.user,
+      email,
     })
   } catch (error) {
     console.error('Signup API error:', error)
