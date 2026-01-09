@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 
-// This route uses Admin API to verify email tokens directly (bypasses PKCE)
+// This route redirects email confirmation tokens to Supabase's verify endpoint
+// The real fix is disabling PKCE in Supabase Dashboard
 export async function GET(request: NextRequest) {
   try {
     const requestUrl = new URL(request.url)
@@ -10,59 +10,23 @@ export async function GET(request: NextRequest) {
     const redirectTo = requestUrl.searchParams.get('redirect_to') || '/dashboard'
 
     if (!token) {
-      return NextResponse.json(
-        { error: 'Token is required' },
-        { status: 400 }
+      return NextResponse.redirect(
+        new URL('/login?error=invalid_code&message=No token provided', requestUrl.origin)
       )
     }
 
-    // Use Admin API (service role) to verify token directly
-    // This bypasses PKCE requirements
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-    if (!supabaseServiceKey) {
-      console.error('SUPABASE_SERVICE_ROLE_KEY not configured')
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      )
-    }
-
-    // Create admin client with service role key
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    })
-
-    // Verify the token using Admin API
-    // Note: This is a workaround - the proper fix is disabling PKCE in Supabase dashboard
-    const { data, error } = await supabaseAdmin.auth.admin.verifyOtp({
-      token_hash: token,
-      type: type as 'signup' | 'email_change' | 'recovery',
-    })
-
-    if (error) {
-      console.error('Token verification error:', error)
-      return NextResponse.redirect(
-        new URL(`/login?error=invalid_code&message=${encodeURIComponent(error.message)}`, request.url)
-      )
-    }
-
-    if (data?.user) {
-      // Token verified successfully via Admin API
-      // The user is now confirmed, but we need to create a session
-      // Redirect them to login with a success message - they can now sign in
-      return NextResponse.redirect(
-        new URL(`/login?verified=true&email=${encodeURIComponent(data.user.email || '')}&redirect_to=${encodeURIComponent(redirectTo)}`, request.url)
-      )
-    }
-
-    return NextResponse.redirect(
-      new URL('/login?error=auth_failed', request.url)
-    )
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || requestUrl.origin
+    
+    // Redirect to client-side callback handler
+    // Client-side can handle PKCE if browser storage is available
+    const clientCallbackUrl = `${appUrl}/auth/callback/client?token=${token}&type=${type}&next=${encodeURIComponent(redirectTo)}`
+    
+    // Redirect to Supabase verify endpoint
+    // Supabase will process the token and redirect to our client callback
+    const supabaseVerifyUrl = `${supabaseUrl}/auth/v1/verify?token=${token}&type=${type}&redirect_to=${encodeURIComponent(clientCallbackUrl)}`
+    
+    return NextResponse.redirect(supabaseVerifyUrl)
   } catch (error) {
     console.error('Verify email API error:', error)
     return NextResponse.redirect(
@@ -70,4 +34,3 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-
