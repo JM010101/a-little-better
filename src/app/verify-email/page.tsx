@@ -27,7 +27,7 @@ export default async function VerifyEmailPage({
   return (
     <AuthContainer
       title="Verify your email"
-      subtitle="Enter the 6-digit code sent to your email"
+      subtitle="Enter the 8-digit code sent to your email"
     >
       <VerifyEmailForm email={email} />
     </AuthContainer>

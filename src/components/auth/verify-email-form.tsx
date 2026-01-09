@@ -12,7 +12,7 @@ interface VerifyEmailFormProps {
 
 export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
   const router = useRouter()
-  const [code, setCode] = useState(['', '', '', '', '', ''])
+  const [code, setCode] = useState(['', '', '', '', '', '', '', '']) // 8 digits for Supabase OTP
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
@@ -35,7 +35,7 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
     setError('')
 
     // Auto-focus next input
-    if (value && index < 5) {
+    if (value && index < 7) {
       inputRefs.current[index + 1]?.focus()
     }
   }
@@ -46,7 +46,7 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
       inputRefs.current[index - 1]?.focus()
     } else if (e.key === 'ArrowLeft' && index > 0) {
       inputRefs.current[index - 1]?.focus()
-    } else if (e.key === 'ArrowRight' && index < 5) {
+    } else if (e.key === 'ArrowRight' && index < 7) {
       inputRefs.current[index + 1]?.focus()
     }
   }
@@ -55,15 +55,15 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
     e.preventDefault()
     const pastedData = e.clipboardData.getData('text').trim()
     
-    // Only accept 6 digits
-    if (!/^\d{6}$/.test(pastedData)) {
+    // Accept 8 digits (Supabase OTP codes are 8 digits)
+    if (!/^\d{8}$/.test(pastedData)) {
       return
     }
 
     const digits = pastedData.split('')
     const newCode = [...code]
     digits.forEach((digit, index) => {
-      if (index < 6) {
+      if (index < 8) {
         newCode[index] = digit
       }
     })
@@ -71,7 +71,7 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
     setError('')
     
     // Focus last input
-    inputRefs.current[5]?.focus()
+    inputRefs.current[7]?.focus()
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,8 +81,8 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
 
     const verificationCode = code.join('')
 
-    if (verificationCode.length !== 6) {
-      setError('Please enter the complete 6-digit code')
+    if (verificationCode.length !== 8) {
+      setError('Please enter the complete 8-digit code')
       setLoading(false)
       return
     }
@@ -157,7 +157,7 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
 
       <div>
         <p className="text-sm text-gray-600 mb-4 text-center">
-          We've sent a 6-digit verification code to <strong>{email}</strong>
+          We've sent an 8-digit verification code to <strong>{email}</strong>
         </p>
         <p className="text-xs text-gray-500 mb-6 text-center">
           Please enter the code below to verify your email address.
@@ -190,7 +190,7 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
         variant="primary"
         size="lg"
         className="w-full"
-        disabled={loading || code.join('').length !== 6}
+        disabled={loading || code.join('').length !== 8}
       >
         {loading ? 'Verifying...' : 'Verify Email'}
       </Button>

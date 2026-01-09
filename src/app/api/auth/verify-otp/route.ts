@@ -12,10 +12,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate token format (6 digits)
-    if (!/^\d{6}$/.test(token)) {
+    // Validate token format (8 digits - Supabase OTP codes are 8 digits)
+    if (!/^\d{8}$/.test(token)) {
       return NextResponse.json(
-        { error: 'Verification code must be 6 digits' },
+        { error: 'Verification code must be 8 digits' },
         { status: 400 }
       )
     }
