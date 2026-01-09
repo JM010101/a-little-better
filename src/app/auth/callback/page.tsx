@@ -5,20 +5,31 @@ import { Container } from '@/components/layout/container'
 export default async function AuthCallbackPage({
   searchParams,
 }: {
-  searchParams: Promise<{ code?: string; next?: string; redirect_to?: string }>
+  searchParams: Promise<{ code?: string; next?: string; redirect_to?: string; type?: string; token?: string }>
 }) {
   const params = await searchParams
   const code = params.code
+  const type = params.type // 'signup', 'recovery', 'email_change', etc.
+  const token = params.token // For email confirmations
   // Supabase may send redirect_to parameter, or we use next, or default to dashboard
   const next = params.redirect_to || params.next || '/dashboard'
   const supabase = await createServerSupabaseClient()
 
   if (code) {
+    // Try server-side exchange first
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-
+    
     if (error) {
       console.error('Auth callback error:', error)
-      // Provide more specific error messages
+      
+      // If PKCE error (common with email links), redirect to client-side handler
+      // Client-side can handle PKCE properly with browser storage
+      if (error.message.includes('PKCE') || error.message.includes('code verifier')) {
+        redirect(`/auth/callback/client?code=${code}&type=${type || 'signup'}&next=${encodeURIComponent(next)}`)
+        return
+      }
+      
+      // Other errors - show specific message
       const errorParam = error.message.includes('expired') 
         ? 'code_expired' 
         : error.message.includes('invalid') 
@@ -28,7 +39,7 @@ export default async function AuthCallbackPage({
       return
     }
 
-    // If exchange was successful, check session immediately
+    // Success - check if we have a session
     if (data?.session) {
       redirect(next)
       return
