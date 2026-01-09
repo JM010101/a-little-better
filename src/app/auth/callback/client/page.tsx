@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Container } from '@/components/layout/container'
 
-export default function ClientCallbackPage() {
+function CallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
@@ -89,6 +89,25 @@ export default function ClientCallbackPage() {
         <p className="text-gray-600">Verifying your email...</p>
       </div>
     </Container>
+  )
+}
+
+function LoadingFallback() {
+  return (
+    <Container className="py-12">
+      <div className="max-w-md mx-auto text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    </Container>
+  )
+}
+
+export default function ClientCallbackPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <CallbackContent />
+    </Suspense>
   )
 }
 
