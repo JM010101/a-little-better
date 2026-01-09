@@ -20,18 +20,14 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // If we have a token (direct from email link), redirect to Supabase verify endpoint
+    // If we have a token (direct from email link), redirect to client handler
+    // Client handler will use verifyOtp to verify token directly, bypassing PKCE
     if (token) {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-      
-      // Redirect to client-side callback handler after Supabase verifies
-      const clientCallbackUrl = `${appUrl}/auth/callback/client?token=${token}&type=${type}&next=${encodeURIComponent(redirectTo)}`
-      
-      // Redirect to Supabase verify endpoint
-      // Supabase will process the token and redirect to our client callback with a code
-      const supabaseVerifyUrl = `${supabaseUrl}/auth/v1/verify?token=${token}&type=${type}&redirect_to=${encodeURIComponent(clientCallbackUrl)}`
-      
-      return NextResponse.redirect(supabaseVerifyUrl)
+      // Redirect directly to client-side handler with token
+      // Client will use verifyOtp which doesn't require PKCE
+      return NextResponse.redirect(
+        new URL(`/auth/callback/client?token=${token}&type=${type}&next=${encodeURIComponent(redirectTo)}`, appUrl)
+      )
     }
 
     // No token or code provided

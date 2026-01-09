@@ -33,10 +33,10 @@ export async function POST(request: NextRequest) {
 
     // Use production URL from env, or fallback to request origin
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin
-    // Point directly to callback handler
-    // Supabase will verify the token and redirect here with a code
-    // With implicit flow configured, this should work without PKCE issues
-    const redirectUrl = `${appUrl}/auth/callback`
+    // Point to client-side callback handler
+    // The email link will go to Supabase verify endpoint first, then redirect here
+    // We'll handle the token directly using verifyOtp to bypass PKCE
+    const redirectUrl = `${appUrl}/auth/callback/client`
 
     const { data, error } = await supabase.auth.signUp({
       email,

@@ -28,34 +28,57 @@ function CallbackContent() {
         let sessionData = null
         let exchangeError = null
 
-        // Handle token parameter (direct from email)
-        // When Supabase email contains a token, it goes to Supabase's verify endpoint first
-        // Then Supabase redirects to our callback with a code
-        // If we somehow get a token directly, redirect to Supabase verify endpoint
+        // Handle token parameter (direct from email link)
+        // Use verifyOtp to verify the token directly without going through Supabase's verify endpoint
+        // This bypasses PKCE entirely
         if (token && type === 'signup') {
-          const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-          if (supabaseUrl) {
-            const redirectUrl = `${window.location.origin}/auth/callback?type=${type}&next=${encodeURIComponent(next)}`
-            // Redirect to Supabase verify endpoint - it will handle token and redirect back with code
-            window.location.href = `${supabaseUrl}/auth/v1/verify?token=${token}&type=${type}&redirect_to=${encodeURIComponent(redirectUrl)}`
+          const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
+            token_hash: token,
+            type: 'signup',
+          })
+
+          if (verifyError) {
+            console.error('Token verification error:', verifyError)
+            setError(verifyError.message)
+            setLoading(false)
+            setTimeout(() => {
+              router.push(`/login?error=invalid_code&message=${encodeURIComponent(verifyError.message)}`)
+            }, 2000)
+            return
+          }
+
+          if (verifyData?.session) {
+            // Success! Token verified and session created
+            router.push(next)
+            router.refresh()
+            return
+          } else {
+            setError('Failed to create session after token verification')
+            setLoading(false)
+            setTimeout(() => {
+              router.push('/login?error=auth_failed')
+            }, 2000)
             return
           }
         }
 
         // Handle code parameter (from Supabase redirect after token verification)
+        // Supabase's verify endpoint generates PKCE codes, so we need to handle them
         if (code) {
-          // Try to exchange code - if PKCE error, we need to handle differently
+          // Try to exchange code - with implicit flow configured, this should work
+          // But if Supabase generated a PKCE code, we'll get an error
           const result = await supabase.auth.exchangeCodeForSession(code)
           sessionData = result.data
           exchangeError = result.error
           
-          // If PKCE error still occurs, it means Supabase's verify endpoint is using PKCE
-          // This can happen if the email link was generated before we switched to implicit flow
+          // If PKCE error occurs, it means Supabase's verify endpoint generated a PKCE code
+          // This happens because Supabase's email verification always uses PKCE
+          // The solution is to handle the token directly (above) instead of letting Supabase convert it
           if (exchangeError && (exchangeError.message.includes('PKCE') || exchangeError.message.includes('code verifier') || exchangeError.message.includes('non-empty'))) {
-            setError('This confirmation link requires PKCE. Please request a new confirmation email or try signing up again.')
+            setError('This confirmation link uses PKCE flow. Please use the token from the email link directly, or request a new confirmation email.')
             setLoading(false)
             setTimeout(() => {
-              router.push(`/login?error=pkce_enabled&message=${encodeURIComponent('Please request a new confirmation email. The link may have been generated with PKCE flow.')}`)
+              router.push(`/login?error=pkce_enabled&message=${encodeURIComponent('Email confirmation links use PKCE. Please ensure you\'re clicking the link directly from the email.')}`)
             }, 3000)
             return
           }
