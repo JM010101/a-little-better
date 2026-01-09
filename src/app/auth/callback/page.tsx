@@ -5,19 +5,32 @@ import { Container } from '@/components/layout/container'
 export default async function AuthCallbackPage({
   searchParams,
 }: {
-  searchParams: Promise<{ code?: string; next?: string }>
+  searchParams: Promise<{ code?: string; next?: string; redirect_to?: string }>
 }) {
   const params = await searchParams
   const code = params.code
-  const next = params.next || '/dashboard'
+  // Supabase may send redirect_to parameter, or we use next, or default to dashboard
+  const next = params.redirect_to || params.next || '/dashboard'
   const supabase = await createServerSupabaseClient()
 
   if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
       console.error('Auth callback error:', error)
-      redirect('/login?error=auth_failed')
+      // Provide more specific error messages
+      const errorParam = error.message.includes('expired') 
+        ? 'code_expired' 
+        : error.message.includes('invalid') 
+        ? 'invalid_code'
+        : 'auth_failed'
+      redirect(`/login?error=${errorParam}&message=${encodeURIComponent(error.message)}`)
+      return
+    }
+
+    // If exchange was successful, check session immediately
+    if (data?.session) {
+      redirect(next)
       return
     }
   }

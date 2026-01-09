@@ -21,9 +21,25 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string; redirected?: string }>
 }) {
   const params = await searchParams
-  const errorMessage = params.error === 'auth_failed' 
-    ? 'Authentication failed. Please try again.'
-    : null
+  let errorMessage: string | null = null
+  
+  if (params.error) {
+    switch (params.error) {
+      case 'auth_failed':
+        errorMessage = 'Authentication failed. Please try again.'
+        break
+      case 'code_expired':
+        errorMessage = 'This confirmation link has expired. Please request a new one.'
+        break
+      case 'invalid_code':
+        errorMessage = 'Invalid confirmation link. Please check your email for the latest link.'
+        break
+      default:
+        errorMessage = params.message 
+          ? decodeURIComponent(params.message as string)
+          : 'Authentication failed. Please try again.'
+    }
+  }
 
   return (
     <AuthContainer
