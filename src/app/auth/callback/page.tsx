@@ -9,12 +9,29 @@ export default async function AuthCallbackPage({
 }) {
   const params = await searchParams
   const code = params.code
-  const type = params.type // 'signup', 'recovery', 'email_change', etc.
-  const token = params.token // For email confirmations
+  const type = params.type || 'signup' // 'signup', 'recovery', 'email_change', etc.
+  const token = params.token // For email confirmations (when coming directly from email)
   // Supabase may send redirect_to parameter, or we use next, or default to dashboard
   const next = params.redirect_to || params.next || '/dashboard'
   const supabase = await createServerSupabaseClient()
 
+  // Handle token parameter (direct email confirmation links)
+  // These don't use PKCE, so we can verify them server-side
+  if (token && type === 'signup') {
+    try {
+      // For email confirmations, we need to verify the token
+      // But Supabase's verify endpoint should handle this and redirect with code
+      // If we get a token directly, redirect to client-side handler
+      redirect(`/auth/callback/client?token=${token}&type=${type}&next=${encodeURIComponent(next)}`)
+      return
+    } catch (err) {
+      console.error('Token verification error:', err)
+      redirect(`/login?error=invalid_code&message=${encodeURIComponent('Invalid confirmation token')}`)
+      return
+    }
+  }
+
+  // Handle code parameter (from Supabase redirect after token verification)
   if (code) {
     // Try server-side exchange first
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
@@ -24,8 +41,8 @@ export default async function AuthCallbackPage({
       
       // If PKCE error (common with email links), redirect to client-side handler
       // Client-side can handle PKCE properly with browser storage
-      if (error.message.includes('PKCE') || error.message.includes('code verifier')) {
-        redirect(`/auth/callback/client?code=${code}&type=${type || 'signup'}&next=${encodeURIComponent(next)}`)
+      if (error.message.includes('PKCE') || error.message.includes('code verifier') || error.message.includes('non-empty')) {
+        redirect(`/auth/callback/client?code=${code}&type=${type}&next=${encodeURIComponent(next)}`)
         return
       }
       

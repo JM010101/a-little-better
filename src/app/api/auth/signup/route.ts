@@ -40,6 +40,8 @@ export async function POST(request: NextRequest) {
       password,
       options: {
         emailRedirectTo: redirectUrl,
+        // Disable PKCE for email confirmations to avoid code verifier issues
+        captchaToken: undefined,
       },
     })
 

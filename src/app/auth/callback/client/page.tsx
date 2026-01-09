@@ -14,18 +14,41 @@ function CallbackContent() {
   useEffect(() => {
     const handleCallback = async () => {
       const code = searchParams.get('code')
-      const type = searchParams.get('type')
+      const token = searchParams.get('token')
+      const type = searchParams.get('type') || 'signup'
       const next = searchParams.get('next') || '/dashboard'
 
-      if (!code) {
-        setError('No confirmation code provided')
+      if (!code && !token) {
+        setError('No confirmation code or token provided')
         setLoading(false)
         return
       }
 
       try {
-        // Use client-side exchange which can handle PKCE properly
-        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+        let sessionData = null
+        let exchangeError = null
+
+        // Handle token parameter (direct from email)
+        // When Supabase email contains a token, it goes to Supabase's verify endpoint first
+        // Then Supabase redirects to our callback with a code
+        // If we somehow get a token directly, redirect to Supabase verify endpoint
+        if (token && type === 'signup') {
+          const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+          if (supabaseUrl) {
+            const redirectUrl = `${window.location.origin}/auth/callback?type=${type}&next=${encodeURIComponent(next)}`
+            // Redirect to Supabase verify endpoint - it will handle token and redirect back with code
+            window.location.href = `${supabaseUrl}/auth/v1/verify?token=${token}&type=${type}&redirect_to=${encodeURIComponent(redirectUrl)}`
+            return
+          }
+        }
+
+        // Handle code parameter (from Supabase redirect after token verification)
+        if (code) {
+          // Use client-side exchange which can handle PKCE properly
+          const result = await supabase.auth.exchangeCodeForSession(code)
+          sessionData = result.data
+          exchangeError = result.error
+        }
 
         if (exchangeError) {
           console.error('Auth callback error:', exchangeError)
@@ -44,7 +67,7 @@ function CallbackContent() {
           return
         }
 
-        if (data?.session) {
+        if (sessionData?.session) {
           // Success! Redirect to dashboard
           router.push(next)
           router.refresh()
