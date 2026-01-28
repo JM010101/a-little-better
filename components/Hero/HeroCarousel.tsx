@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -18,18 +19,26 @@ const portfolioImages = [
 ];
 
 export default function HeroCarousel() {
+  const plugins = useMemo(
+    () => [
+      Autoplay({
+        delay: 4000,
+        stopOnInteraction: false,
+        stopOnMouseEnter: false
+      }),
+      WheelGesturesPlugin()
+    ],
+    []
+  );
+
   return (
     <Carousel
       className="mt-20 w-full"
-      plugins={[
-        Autoplay({
-          delay: 7000
-        }),
-        WheelGesturesPlugin()
-      ]}
+      plugins={plugins}
       opts={{
         loop: true,
-        align: "center"
+        align: "center",
+        duration: 25
       }}
     >
       <CarouselContent>
