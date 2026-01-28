@@ -12,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Agency Template",
+  title: "A Little Better",
   description: "We create pleaseant experiences for your customers."
 };
 
