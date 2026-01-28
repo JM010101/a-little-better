@@ -5,7 +5,11 @@ import Navbar from "@/components/Navbar/Navbar";
 import DisableDevTools from "@/components/Protection/DisableDevTools";
 import Chatbot from "@/components/Chatbot/Chatbot";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: "swap",
+  fallback: ["system-ui", "arial"]
+});
 
 export const metadata: Metadata = {
   title: "Agency Template",
