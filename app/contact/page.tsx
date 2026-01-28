@@ -8,8 +8,8 @@ export default function ContactPage() {
         <div className="w-full max-w-[600px]">
           <h1 className="text-4xl font-medium text-center mb-4">Get in Touch</h1>
           <p className="text-neutral-600 text-center mb-10">
-            Have a project in mind? We'd love to hear from you. Send us a message
-            and we'll respond as soon as possible.
+            Have a project in mind? We&apos;d love to hear from you. Send us a message
+            and we&apos;ll respond as soon as possible.
           </p>
           <ContactForm />
         </div>

@@ -11,16 +11,16 @@ export default function Footer() {
             <Logo size="h-10 w-10" withText />
             <div className="flex flex-col gap-3 max-w-md">
               <p className="text-neutral-600 italic">
-                "Rome wasn't built in a day, but they were laying bricks every hour."
+                &ldquo;Rome wasn&apos;t built in a day, but they were laying bricks every hour.&rdquo;
               </p>
               <p className="text-neutral-600 italic">
-                "Every little bit helps. A penny saved is a penny earned."
+                &ldquo;Every little bit helps. A penny saved is a penny earned.&rdquo;
               </p>
               <p className="text-neutral-600 italic">
-                "Slow and steady wins the race."
+                &ldquo;Slow and steady wins the race.&rdquo;
               </p>
               <p className="text-neutral-600 italic">
-                "It's the little things that make the big difference."
+                &ldquo;It&apos;s the little things that make the big difference.&rdquo;
               </p>
             </div>
           </div>

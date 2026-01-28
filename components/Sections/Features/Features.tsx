@@ -69,7 +69,7 @@ export default function Features() {
             Our Products
           </p>
           <p className="text-neutral-600 text-xl text-center max-w-[700px] mt-4">
-            These are the products we've created. Please browse our website to find similar products and contact us.
+            These are the products we&apos;ve created. Please browse our website to find similar products and contact us.
           </p>
         </div>
         <div className="flex flex-col justify-start md:grid md:grid-cols-3 w-full max-w-[1000px] gap-4 mt-8">
