@@ -39,10 +39,9 @@ export default function UsersCloud() {
             <Image
               src={src}
               alt={alt}
-              width="100"
-              height="100"
-              objectFit="cover"
-              className="grayscale hover:grayscale-0 transition-all"
+              width={100}
+              height={100}
+              className="grayscale hover:grayscale-0 transition-all object-cover"
             />
           </div>
         ))}
