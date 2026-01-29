@@ -45,70 +45,98 @@ Reply to: ${email}
     }
     
     try {
-      // Web3Forms API payload format
+      // Web3Forms API payload - simplified format
       const payload = {
         access_key: web3formsAccessKey,
         subject: `Contact Form: ${subject}`,
-        from_name: name,
-        from_email: email,
-        to_email: recipientEmail,
-        message: emailContent,
-        // Additional fields for better email formatting
         name: name,
         email: email,
+        message: emailContent,
       };
 
-      console.log("Sending to Web3Forms:", {
-        access_key: web3formsAccessKey ? `${web3formsAccessKey.substring(0, 8)}...` : "NOT SET",
-        to_email: recipientEmail,
-      });
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const web3formsResponse = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const responseText = await web3formsResponse.text();
-      let result;
-      
       try {
-        result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error("Failed to parse Web3Forms response:", responseText);
-        return NextResponse.json(
-          { error: "Invalid response from email service." },
-          { status: 500 }
-        );
-      }
-
-      if (web3formsResponse.ok && result.success) {
-        return NextResponse.json(
-          { message: "Message sent successfully!" },
-          { status: 200 }
-        );
-      } else {
-        console.error("Web3Forms API error:", {
-          status: web3formsResponse.status,
-          result,
+        const web3formsResponse = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
         });
-        return NextResponse.json(
-          { error: result.message || "Failed to send message. Please try again." },
-          { status: 500 }
-        );
+
+        clearTimeout(timeoutId);
+
+        if (!web3formsResponse.ok) {
+          const errorText = await web3formsResponse.text();
+          console.error("Web3Forms HTTP error:", {
+            status: web3formsResponse.status,
+            statusText: web3formsResponse.statusText,
+            errorText,
+          });
+          
+          let errorMessage = "Failed to send message. Please try again.";
+          try {
+            const errorJson = JSON.parse(errorText);
+            errorMessage = errorJson.message || errorMessage;
+          } catch {
+            // Keep default error message
+          }
+          
+          return NextResponse.json(
+            { error: errorMessage },
+            { status: 500 }
+          );
+        }
+
+        const result = await web3formsResponse.json();
+
+        if (result.success) {
+          return NextResponse.json(
+            { message: "Message sent successfully!" },
+            { status: 200 }
+          );
+        } else {
+          console.error("Web3Forms API returned error:", result);
+          return NextResponse.json(
+            { error: result.message || "Failed to send message. Please try again." },
+            { status: 500 }
+          );
+        }
+      } catch (fetchError: any) {
+        clearTimeout(timeoutId);
+        
+        if (fetchError.name === 'AbortError') {
+          console.error("Web3Forms API timeout");
+          return NextResponse.json(
+            { error: "Request timed out. Please try again." },
+            { status: 500 }
+          );
+        }
+        
+        throw fetchError; // Re-throw to be caught by outer catch
       }
     } catch (fetchError: any) {
       console.error("Error calling Web3Forms API:", {
         message: fetchError?.message,
-        stack: fetchError?.stack,
         name: fetchError?.name,
         cause: fetchError?.cause,
       });
+      
+      // More specific error messages
+      if (fetchError.message?.includes('fetch')) {
+        return NextResponse.json(
+          { error: "Network error. Please check your connection and try again." },
+          { status: 500 }
+        );
+      }
+      
       return NextResponse.json(
-        { error: "Failed to connect to email service. Please try again later." },
+        { error: "Failed to send message. Please try again later." },
         { status: 500 }
       );
     }
