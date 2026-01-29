@@ -30,21 +30,42 @@ export default function ContactForm() {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
-    // Simulate form submission
-    // In a real application, you would send this to your backend API
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus({
+          type: "success",
+          message: "Thank you! Your message has been sent successfully. We'll get back to you soon."
+        });
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: ""
+        });
+      } else {
+        setSubmitStatus({
+          type: "error",
+          message: data.error || "Failed to send message. Please try again."
+        });
+      }
+    } catch (error) {
       setSubmitStatus({
-        type: "success",
-        message: "Thank you! Your message has been sent successfully."
+        type: "error",
+        message: "Failed to send message. Please try again later."
       });
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: ""
-      });
-    }, 1000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
