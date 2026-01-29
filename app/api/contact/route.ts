@@ -45,23 +45,45 @@ Reply to: ${email}
     }
     
     try {
+      // Web3Forms API payload format
+      const payload = {
+        access_key: web3formsAccessKey,
+        subject: `Contact Form: ${subject}`,
+        from_name: name,
+        from_email: email,
+        to_email: recipientEmail,
+        message: emailContent,
+        // Additional fields for better email formatting
+        name: name,
+        email: email,
+      };
+
+      console.log("Sending to Web3Forms:", {
+        access_key: web3formsAccessKey ? `${web3formsAccessKey.substring(0, 8)}...` : "NOT SET",
+        to_email: recipientEmail,
+      });
+
       const web3formsResponse = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({
-          access_key: web3formsAccessKey,
-          subject: `Contact Form: ${subject}`,
-          from_name: name,
-          from_email: email,
-          to_email: recipientEmail,
-          message: emailContent,
-        }),
+        body: JSON.stringify(payload),
       });
 
-      const result = await web3formsResponse.json();
+      const responseText = await web3formsResponse.text();
+      let result;
+      
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("Failed to parse Web3Forms response:", responseText);
+        return NextResponse.json(
+          { error: "Invalid response from email service." },
+          { status: 500 }
+        );
+      }
 
       if (web3formsResponse.ok && result.success) {
         return NextResponse.json(
@@ -78,8 +100,13 @@ Reply to: ${email}
           { status: 500 }
         );
       }
-    } catch (fetchError) {
-      console.error("Error calling Web3Forms API:", fetchError);
+    } catch (fetchError: any) {
+      console.error("Error calling Web3Forms API:", {
+        message: fetchError?.message,
+        stack: fetchError?.stack,
+        name: fetchError?.name,
+        cause: fetchError?.cause,
+      });
       return NextResponse.json(
         { error: "Failed to connect to email service. Please try again later." },
         { status: 500 }
