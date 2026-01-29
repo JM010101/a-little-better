@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar/Navbar";
-import DisableDevTools from "@/components/Protection/DisableDevTools";
 import Chatbot from "@/components/Chatbot/Chatbot";
 
 const inter = Inter({ 
@@ -24,7 +23,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <DisableDevTools />
         <Navbar />
         {children}
         <Chatbot />
