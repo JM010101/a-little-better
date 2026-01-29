@@ -32,12 +32,12 @@ This message was sent from the contact form on A Little Better website.
 Reply to: ${email}
     `.trim();
 
-    // Using Web3Forms (free, no signup required)
-    // Get your access key from: https://web3forms.com
-    const web3formsAccessKey = process.env.WEB3FORMS_ACCESS_KEY;
+    // Using Formspree (free tier available, works better with server-side requests)
+    // Sign up at https://formspree.io and get your form endpoint
+    const formspreeEndpoint = process.env.FORMSPREE_ENDPOINT;
     
-    if (!web3formsAccessKey) {
-      console.error("WEB3FORMS_ACCESS_KEY is not configured");
+    if (!formspreeEndpoint) {
+      console.error("FORMSPREE_ENDPOINT is not configured");
       return NextResponse.json(
         { error: "Email service is not configured. Please contact support." },
         { status: 500 }
@@ -45,95 +45,60 @@ Reply to: ${email}
     }
     
     try {
-      // Web3Forms API payload - simplified format
+      // Formspree API payload
       const payload = {
-        access_key: web3formsAccessKey,
-        subject: `Contact Form: ${subject}`,
         name: name,
         email: email,
+        subject: subject,
         message: emailContent,
+        _to: recipientEmail,
+        _subject: `Contact Form: ${subject}`,
+        _replyto: email,
       };
 
-      // Create AbortController for timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-      try {
-        const web3formsResponse = await fetch("https://api.web3forms.com/submit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(payload),
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!web3formsResponse.ok) {
-          const errorText = await web3formsResponse.text();
-          console.error("Web3Forms HTTP error:", {
-            status: web3formsResponse.status,
-            statusText: web3formsResponse.statusText,
-            errorText,
-          });
-          
-          let errorMessage = "Failed to send message. Please try again.";
-          try {
-            const errorJson = JSON.parse(errorText);
-            errorMessage = errorJson.message || errorMessage;
-          } catch {
-            // Keep default error message
-          }
-          
-          return NextResponse.json(
-            { error: errorMessage },
-            { status: 500 }
-          );
-        }
-
-        const result = await web3formsResponse.json();
-
-        if (result.success) {
-          return NextResponse.json(
-            { message: "Message sent successfully!" },
-            { status: 200 }
-          );
-        } else {
-          console.error("Web3Forms API returned error:", result);
-          return NextResponse.json(
-            { error: result.message || "Failed to send message. Please try again." },
-            { status: 500 }
-          );
-        }
-      } catch (fetchError: any) {
-        clearTimeout(timeoutId);
-        
-        if (fetchError.name === 'AbortError') {
-          console.error("Web3Forms API timeout");
-          return NextResponse.json(
-            { error: "Request timed out. Please try again." },
-            { status: 500 }
-          );
-        }
-        
-        throw fetchError; // Re-throw to be caught by outer catch
-      }
-    } catch (fetchError: any) {
-      console.error("Error calling Web3Forms API:", {
-        message: fetchError?.message,
-        name: fetchError?.name,
-        cause: fetchError?.cause,
+      const formspreeResponse = await fetch(formspreeEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
       });
-      
-      // More specific error messages
-      if (fetchError.message?.includes('fetch')) {
+
+      if (!formspreeResponse.ok) {
+        const errorText = await formspreeResponse.text();
+        console.error("Formspree HTTP error:", {
+          status: formspreeResponse.status,
+          statusText: formspreeResponse.statusText,
+          errorText,
+        });
+        
         return NextResponse.json(
-          { error: "Network error. Please check your connection and try again." },
+          { error: "Failed to send message. Please try again." },
           { status: 500 }
         );
       }
+
+      const result = await formspreeResponse.json();
+
+      // Formspree returns success on 200 status
+      if (formspreeResponse.ok) {
+        return NextResponse.json(
+          { message: "Message sent successfully!" },
+          { status: 200 }
+        );
+      } else {
+        console.error("Formspree API returned error:", result);
+        return NextResponse.json(
+          { error: result.error || "Failed to send message. Please try again." },
+          { status: 500 }
+        );
+      }
+    } catch (fetchError: any) {
+      console.error("Error calling Formspree API:", {
+        message: fetchError?.message,
+        name: fetchError?.name,
+      });
       
       return NextResponse.json(
         { error: "Failed to send message. Please try again later." },
