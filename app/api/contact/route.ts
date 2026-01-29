@@ -14,44 +14,93 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify reCAPTCHA token
-    const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY || "6LcuEVosAAAAAOVXVVNDX4cm8EqowAsxóngCmhCd";
+    // Note: Make sure RECAPTCHA_SECRET_KEY is set in Vercel environment variables
+    const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
     
-    if (recaptchaToken) {
-      try {
-        const recaptchaResponse = await fetch(
-          `https://www.google.com/recaptcha/api/siteverify`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: `secret=${recaptchaSecretKey}&response=${recaptchaToken}`,
-          }
-        );
+    if (!recaptchaToken) {
+      console.error("reCAPTCHA token is missing");
+      return NextResponse.json(
+        { error: "reCAPTCHA token is missing. Please complete the reCAPTCHA verification." },
+        { status: 400 }
+      );
+    }
 
-        const recaptchaResult = await recaptchaResponse.json();
+    if (!recaptchaSecretKey) {
+      console.error("RECAPTCHA_SECRET_KEY is not configured in environment variables");
+      return NextResponse.json(
+        { error: "Server configuration error. Please contact support." },
+        { status: 500 }
+      );
+    }
 
-        if (!recaptchaResult.success) {
-          console.error("reCAPTCHA verification failed:", recaptchaResult);
-          return NextResponse.json(
-            { error: "reCAPTCHA verification failed. Please try again." },
-            { status: 400 }
-          );
+    try {
+      // URL encode the secret key and token to handle special characters
+      const encodedSecret = encodeURIComponent(recaptchaSecretKey);
+      const encodedToken = encodeURIComponent(recaptchaToken);
+      
+      const recaptchaResponse = await fetch(
+        `https://www.google.com/recaptcha/api/siteverify`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `secret=${encodedSecret}&response=${encodedToken}`,
         }
+      );
 
-        // reCAPTCHA v2 Checkbox doesn't return a score, just success/failure
-        // The success field indicates if verification passed
-      } catch (recaptchaError) {
-        console.error("Error verifying reCAPTCHA:", recaptchaError);
+      if (!recaptchaResponse.ok) {
+        console.error("reCAPTCHA API HTTP error:", {
+          status: recaptchaResponse.status,
+          statusText: recaptchaResponse.statusText,
+        });
         return NextResponse.json(
-          { error: "reCAPTCHA verification error. Please try again." },
+          { error: "reCAPTCHA verification service error. Please try again." },
           { status: 500 }
         );
       }
-    } else {
+
+      const recaptchaResult = await recaptchaResponse.json();
+
+      console.log("reCAPTCHA verification result:", {
+        success: recaptchaResult.success,
+        "error-codes": recaptchaResult["error-codes"],
+      });
+
+      if (!recaptchaResult.success) {
+        const errorCodes = recaptchaResult["error-codes"] || [];
+        console.error("reCAPTCHA verification failed:", {
+          success: recaptchaResult.success,
+          errorCodes,
+        });
+        
+        // Provide more specific error messages
+        let errorMessage = "reCAPTCHA verification failed. Please try again.";
+        if (errorCodes.includes("invalid-input-secret")) {
+          errorMessage = "reCAPTCHA configuration error. Please contact support.";
+        } else if (errorCodes.includes("invalid-input-response")) {
+          errorMessage = "reCAPTCHA token is invalid. Please complete the verification again.";
+        } else if (errorCodes.includes("timeout-or-duplicate")) {
+          errorMessage = "reCAPTCHA token expired. Please complete the verification again.";
+        }
+        
+        return NextResponse.json(
+          { error: errorMessage },
+          { status: 400 }
+        );
+      }
+
+      // reCAPTCHA v2 Checkbox doesn't return a score, just success/failure
+      // The success field indicates if verification passed
+    } catch (recaptchaError: any) {
+      console.error("Error verifying reCAPTCHA:", {
+        message: recaptchaError?.message,
+        name: recaptchaError?.name,
+        stack: recaptchaError?.stack,
+      });
       return NextResponse.json(
-        { error: "reCAPTCHA token is missing. Please refresh the page and try again." },
-        { status: 400 }
+        { error: "reCAPTCHA verification error. Please try again." },
+        { status: 500 }
       );
     }
 
