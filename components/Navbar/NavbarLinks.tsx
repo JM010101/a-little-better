@@ -39,9 +39,17 @@ export default function NavbarLinks() {
         Blog
       </Link>
       {/* Team */}
-      <Link href="/team" className="flex items-center rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-50 hover:text-blue-500 transition-all">
-        Team
-      </Link>
+      <MenubarMenu>
+        <MenubarTrigger>Team</MenubarTrigger>
+        <MenubarContent>
+          <Link href="/team/managers">
+            <MenubarItem>Managers</MenubarItem>
+          </Link>
+          <Link href="/team/developers">
+            <MenubarItem>Developers</MenubarItem>
+          </Link>
+        </MenubarContent>
+      </MenubarMenu>
       {/* Contact */}
       <Link href="/contact" className="flex items-center rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-50 hover:text-blue-500 transition-all">
         Contact

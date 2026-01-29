@@ -3,44 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 
-interface TeamMember {
+export interface TeamMember {
   name: string;
   role: string;
   image: string;
 }
-
-const teamMembers: TeamMember[] = [
-  {
-    name: "Adam Wong",
-    role: "CEO & Founder",
-    image: "/team/adam wong - CEO&founder.png"
-  },
-  {
-    name: "hiring...",
-    role: "CTO",
-    image: ""
-  },
-  {
-    name: "hiring...",
-    role: "COO",
-    image: ""
-  },
-  {
-    name: "hiring...",
-    role: "HR Director",
-    image: ""
-  },
-  {
-    name: "hiring...",
-    role: "Technical Architect",
-    image: ""
-  },
-  {
-    name: "hiring...",
-    role: "CFO",
-    image: ""
-  }
-];
 
 function TeamMemberCard({ member }: { member: TeamMember }) {
   const [imageError, setImageError] = useState(false);
@@ -70,10 +37,14 @@ function TeamMemberCard({ member }: { member: TeamMember }) {
   );
 }
 
-export default function TeamMembers() {
+interface TeamMembersProps {
+  members: TeamMember[];
+}
+
+export default function TeamMembers({ members }: TeamMembersProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {teamMembers.map((member, index) => (
+      {members.map((member, index) => (
         <TeamMemberCard key={index} member={member} />
       ))}
     </div>
