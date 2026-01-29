@@ -34,10 +34,17 @@ Reply to: ${email}
 
     // Using Web3Forms (free, no signup required)
     // Get your access key from: https://web3forms.com
-    // It's free and takes 30 seconds to set up
     const web3formsAccessKey = process.env.WEB3FORMS_ACCESS_KEY;
     
-    if (web3formsAccessKey) {
+    if (!web3formsAccessKey) {
+      console.error("WEB3FORMS_ACCESS_KEY is not configured");
+      return NextResponse.json(
+        { error: "Email service is not configured. Please contact support." },
+        { status: 500 }
+      );
+    }
+    
+    try {
       const web3formsResponse = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
@@ -62,37 +69,26 @@ Reply to: ${email}
           { status: 200 }
         );
       } else {
-        console.error("Web3Forms error:", result);
+        console.error("Web3Forms API error:", {
+          status: web3formsResponse.status,
+          result,
+        });
         return NextResponse.json(
           { error: result.message || "Failed to send message. Please try again." },
           { status: 500 }
         );
       }
+    } catch (fetchError) {
+      console.error("Error calling Web3Forms API:", fetchError);
+      return NextResponse.json(
+        { error: "Failed to connect to email service. Please try again later." },
+        { status: 500 }
+      );
     }
-
-    // Fallback: Log the submission (for development/testing)
-    // To enable email sending, get a free Web3Forms access key from https://web3forms.com
-    // Then add WEB3FORMS_ACCESS_KEY=your_key_here to your .env.local file
-    console.log("Contact form submission (logged - configure WEB3FORMS_ACCESS_KEY to enable email):", {
-      to: recipientEmail,
-      from: email,
-      name,
-      subject,
-      message,
-    });
-
-    // Return success in development, but remind to configure email service
-    return NextResponse.json(
-      { 
-        message: "Message received! (Email service not configured - see console for details)",
-        note: "Get a free Web3Forms access key from https://web3forms.com and add WEB3FORMS_ACCESS_KEY to .env.local"
-      },
-      { status: 200 }
-    );
   } catch (error) {
     console.error("Error processing contact form:", error);
     return NextResponse.json(
-      { error: "Failed to send message. Please try again later." },
+      { error: "Failed to process your request. Please try again later." },
       { status: 500 }
     );
   }
