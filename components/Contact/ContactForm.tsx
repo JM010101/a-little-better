@@ -1,7 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+
+declare global {
+  interface Window {
+    grecaptcha: {
+      ready: (callback: () => void) => void;
+      execute: (siteKey: string, options: { action: string }) => Promise<string>;
+    };
+  }
+}
+
+const RECAPTCHA_SITE_KEY = "6LeP4zEsAAAAANtoWsuhl-4ltNaOWN93HIXHMGE3";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -11,10 +22,31 @@ export default function ContactForm() {
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRecaptchaLoaded, setIsRecaptchaLoaded] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
+
+  useEffect(() => {
+    // Load reCAPTCHA script
+    const script = document.createElement("script");
+    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      setIsRecaptchaLoaded(true);
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup script on unmount
+      const existingScript = document.querySelector(`script[src="${script.src}"]`);
+      if (existingScript) {
+        document.body.removeChild(existingScript);
+      }
+    };
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -27,16 +59,46 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isRecaptchaLoaded) {
+      setSubmitStatus({
+        type: "error",
+        message: "reCAPTCHA is loading. Please wait a moment and try again."
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
     try {
+      // Execute reCAPTCHA v3
+      let recaptchaToken = "";
+      try {
+        await window.grecaptcha.ready(async () => {
+          recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
+            action: "submit_contact_form"
+          });
+        });
+      } catch (recaptchaError) {
+        console.error("reCAPTCHA error:", recaptchaError);
+        setSubmitStatus({
+          type: "error",
+          message: "reCAPTCHA verification failed. Please try again."
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          recaptchaToken,
+        }),
       });
 
       const data = await response.json();

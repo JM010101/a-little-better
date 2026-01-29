@@ -3,12 +3,61 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, subject, message } = body;
+    const { name, email, subject, message, recaptchaToken } = body;
 
     // Validate required fields
     if (!name || !email || !subject || !message) {
       return NextResponse.json(
         { error: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    // Verify reCAPTCHA token
+    const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY || "6LeP4zEsAAAAAPd_r8vPXJeghMiESu358mWEAPwg";
+    
+    if (recaptchaToken) {
+      try {
+        const recaptchaResponse = await fetch(
+          `https://www.google.com/recaptcha/api/siteverify`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `secret=${recaptchaSecretKey}&response=${recaptchaToken}`,
+          }
+        );
+
+        const recaptchaResult = await recaptchaResponse.json();
+
+        if (!recaptchaResult.success) {
+          console.error("reCAPTCHA verification failed:", recaptchaResult);
+          return NextResponse.json(
+            { error: "reCAPTCHA verification failed. Please try again." },
+            { status: 400 }
+          );
+        }
+
+        // Check score (reCAPTCHA v3 returns a score from 0.0 to 1.0)
+        // Lower scores indicate suspicious activity
+        if (recaptchaResult.score < 0.5) {
+          console.warn("reCAPTCHA score too low:", recaptchaResult.score);
+          return NextResponse.json(
+            { error: "reCAPTCHA verification failed. Please try again." },
+            { status: 400 }
+          );
+        }
+      } catch (recaptchaError) {
+        console.error("Error verifying reCAPTCHA:", recaptchaError);
+        return NextResponse.json(
+          { error: "reCAPTCHA verification error. Please try again." },
+          { status: 500 }
+        );
+      }
+    } else {
+      return NextResponse.json(
+        { error: "reCAPTCHA token is missing. Please refresh the page and try again." },
         { status: 400 }
       );
     }
