@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-const RECAPTCHA_SITE_KEY = "6LeP4zEsAAAAANtoWsuhl-4ltNaOWN93HIXHMGE3";
+const RECAPTCHA_SITE_KEY = "6LcuEVosAAAAAEd5ZMpvjEN9EPU9c7dQ7TD9xX9B";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -228,6 +228,29 @@ export default function ContactForm() {
       >
         {isSubmitting ? "Sending..." : "Send Message"}
       </Button>
+      
+      {/* reCAPTCHA v3 Badge */}
+      <div className="text-xs text-neutral-500 text-center mt-2">
+        This site is protected by reCAPTCHA and the Google{" "}
+        <a
+          href="https://policies.google.com/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline"
+        >
+          Privacy Policy
+        </a>{" "}
+        and{" "}
+        <a
+          href="https://policies.google.com/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline"
+        >
+          Terms of Service
+        </a>{" "}
+        apply.
+      </div>
     </form>
   );
 }

@@ -4,6 +4,11 @@ import type { TeamMember } from "@/components/Team/TeamMembers";
 
 const developers: TeamMember[] = [
   {
+    name: "Reginald Chikelu",
+    role: "Full Stack Engineer",
+    image: "/team/Reginald Chikelu - full stack engineer.jpg"
+  },
+  {
     name: "hiring...",
     role: "Senior Full-Stack Developer",
     image: ""

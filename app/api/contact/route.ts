@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify reCAPTCHA token
-    const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY || "6LeP4zEsAAAAAPd_r8vPXJeghMiESu358mWEAPwg";
+    const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY || "6LcuEVosAAAAAOVXVVNDX4cm8EqowAsxóngCmhCd";
     
     if (recaptchaToken) {
       try {
