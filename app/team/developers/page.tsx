@@ -9,6 +9,11 @@ const developers: TeamMember[] = [
     image: "/team/Reginald Chikelu - full stack engineer.jpg"
   },
   {
+    name: "Andrea Montrone",
+    role: "Senior Software Engineer",
+    image: "/team/Andrea Montrone - Senior Software Engineer.png"
+  },
+  {
     name: "hiring...",
     role: "Senior Full-Stack Developer",
     image: ""
