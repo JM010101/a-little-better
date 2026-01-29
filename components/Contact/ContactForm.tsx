@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-const RECAPTCHA_SITE_KEY = "6LcuEVosAAAAAEd5ZMpvjEN9EPU9c7dQ7TD9xX9B";
+const RECAPTCHA_SITE_KEY = "6LeFG1osAAAAANmYQ51ZprcKziJC4JvLW5fp7REY";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
