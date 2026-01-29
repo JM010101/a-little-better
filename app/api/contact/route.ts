@@ -39,15 +39,8 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // Check score (reCAPTCHA v3 returns a score from 0.0 to 1.0)
-        // Lower scores indicate suspicious activity
-        if (recaptchaResult.score < 0.5) {
-          console.warn("reCAPTCHA score too low:", recaptchaResult.score);
-          return NextResponse.json(
-            { error: "reCAPTCHA verification failed. Please try again." },
-            { status: 400 }
-          );
-        }
+        // reCAPTCHA v2 Checkbox doesn't return a score, just success/failure
+        // The success field indicates if verification passed
       } catch (recaptchaError) {
         console.error("Error verifying reCAPTCHA:", recaptchaError);
         return NextResponse.json(

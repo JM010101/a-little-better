@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 declare global {
   interface Window {
     grecaptcha: {
       ready: (callback: () => void) => void;
-      execute: (siteKey: string, options: { action: string }) => Promise<string>;
+      render: (element: HTMLElement, options: { sitekey: string; callback: (token: string) => void }) => number;
+      reset: (widgetId: number) => void;
     };
   }
 }
@@ -23,19 +24,35 @@ export default function ContactForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRecaptchaLoaded, setIsRecaptchaLoaded] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string>("");
+  const recaptchaRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<number | null>(null);
   const [submitStatus, setSubmitStatus] = useState<{
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
 
   useEffect(() => {
-    // Load reCAPTCHA script
+    // Load reCAPTCHA v2 script
     const script = document.createElement("script");
-    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+    script.src = `https://www.google.com/recaptcha/api.js?render=explicit`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
       setIsRecaptchaLoaded(true);
+      // Render reCAPTCHA widget
+      if (window.grecaptcha && recaptchaRef.current) {
+        window.grecaptcha.ready(() => {
+          if (recaptchaRef.current) {
+            widgetIdRef.current = window.grecaptcha.render(recaptchaRef.current, {
+              sitekey: RECAPTCHA_SITE_KEY,
+              callback: (token: string) => {
+                setRecaptchaToken(token);
+              },
+            });
+          }
+        });
+      }
     };
     document.body.appendChild(script);
 
@@ -68,28 +85,18 @@ export default function ContactForm() {
       return;
     }
 
+    if (!recaptchaToken) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please complete the reCAPTCHA verification."
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
     try {
-      // Execute reCAPTCHA v3
-      let recaptchaToken = "";
-      try {
-        await window.grecaptcha.ready(async () => {
-          recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
-            action: "submit_contact_form"
-          });
-        });
-      } catch (recaptchaError) {
-        console.error("reCAPTCHA error:", recaptchaError);
-        setSubmitStatus({
-          type: "error",
-          message: "reCAPTCHA verification failed. Please try again."
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
@@ -114,17 +121,32 @@ export default function ContactForm() {
           subject: "",
           message: ""
         });
+        // Reset reCAPTCHA
+        setRecaptchaToken("");
+        if (widgetIdRef.current !== null && window.grecaptcha) {
+          window.grecaptcha.reset(widgetIdRef.current);
+        }
       } else {
         setSubmitStatus({
           type: "error",
           message: data.error || "Failed to send message. Please try again."
         });
+        // Reset reCAPTCHA on error
+        setRecaptchaToken("");
+        if (widgetIdRef.current !== null && window.grecaptcha) {
+          window.grecaptcha.reset(widgetIdRef.current);
+        }
       }
     } catch (error) {
       setSubmitStatus({
         type: "error",
         message: "Failed to send message. Please try again later."
       });
+      // Reset reCAPTCHA on error
+      setRecaptchaToken("");
+      if (widgetIdRef.current !== null && window.grecaptcha) {
+        window.grecaptcha.reset(widgetIdRef.current);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -220,16 +242,21 @@ export default function ContactForm() {
         </div>
       )}
 
+      {/* reCAPTCHA v2 Checkbox */}
+      <div className="flex justify-center">
+        <div ref={recaptchaRef} id="recaptcha-container"></div>
+      </div>
+
       <Button
         type="submit"
         size="lg"
         className="w-full"
-        disabled={isSubmitting}
+        disabled={isSubmitting || !recaptchaToken}
       >
         {isSubmitting ? "Sending..." : "Send Message"}
       </Button>
       
-      {/* reCAPTCHA v3 Badge */}
+      {/* reCAPTCHA Notice */}
       <div className="text-xs text-neutral-500 text-center mt-2">
         This site is protected by reCAPTCHA and the Google{" "}
         <a
