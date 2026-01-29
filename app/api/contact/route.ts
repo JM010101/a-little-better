@@ -65,6 +65,8 @@ export async function POST(request: NextRequest) {
       console.log("reCAPTCHA verification result:", {
         success: recaptchaResult.success,
         "error-codes": recaptchaResult["error-codes"],
+        hostname: recaptchaResult.hostname,
+        challenge_ts: recaptchaResult.challenge_ts,
       });
 
       if (!recaptchaResult.success) {
@@ -72,6 +74,8 @@ export async function POST(request: NextRequest) {
         console.error("reCAPTCHA verification failed:", {
           success: recaptchaResult.success,
           errorCodes,
+          hostname: recaptchaResult.hostname,
+          tokenLength: recaptchaToken?.length || 0,
         });
         
         // Provide more specific error messages
@@ -79,9 +83,11 @@ export async function POST(request: NextRequest) {
         if (errorCodes.includes("invalid-input-secret")) {
           errorMessage = "reCAPTCHA configuration error. Please contact support.";
         } else if (errorCodes.includes("invalid-input-response")) {
-          errorMessage = "reCAPTCHA token is invalid. Please complete the verification again.";
+          errorMessage = "reCAPTCHA token is invalid or expired. Please check the box again and submit.";
         } else if (errorCodes.includes("timeout-or-duplicate")) {
-          errorMessage = "reCAPTCHA token expired. Please complete the verification again.";
+          errorMessage = "reCAPTCHA token expired or was already used. Please check the box again.";
+        } else if (errorCodes.includes("bad-request")) {
+          errorMessage = "reCAPTCHA request error. Please try again.";
         }
         
         return NextResponse.json(

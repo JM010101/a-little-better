@@ -34,7 +34,7 @@ export default function ContactForm() {
   }>({ type: null, message: "" });
 
   useEffect(() => {
-    // Load reCAPTCHA v2 script
+    // Load reCAPTCHA v2 Checkbox script
     const script = document.createElement("script");
     script.src = `https://www.google.com/recaptcha/api.js?render=explicit`;
     script.async = true;
@@ -87,22 +87,29 @@ export default function ContactForm() {
     }
 
     // Get fresh token right before submission to avoid expiration
-    let currentToken = recaptchaToken;
+    let currentToken = "";
     if (widgetIdRef.current !== null && window.grecaptcha) {
       try {
-        const freshToken = window.grecaptcha.getResponse(widgetIdRef.current);
-        if (freshToken) {
-          currentToken = freshToken;
+        // Get the current response token from the widget
+        currentToken = window.grecaptcha.getResponse(widgetIdRef.current);
+        if (!currentToken) {
+          // If no token, check if we have a stored one
+          currentToken = recaptchaToken;
         }
       } catch (error) {
         console.error("Error getting reCAPTCHA token:", error);
+        // Fallback to stored token
+        currentToken = recaptchaToken;
       }
+    } else {
+      // Fallback to stored token if widget isn't available
+      currentToken = recaptchaToken;
     }
 
-    if (!currentToken) {
+    if (!currentToken || currentToken.length === 0) {
       setSubmitStatus({
         type: "error",
-        message: "Please complete the reCAPTCHA verification."
+        message: "Please complete the reCAPTCHA verification by checking the 'I'm not a robot' box."
       });
       return;
     }
@@ -138,20 +145,29 @@ export default function ContactForm() {
         // Reset reCAPTCHA
         setRecaptchaToken("");
         if (widgetIdRef.current !== null && window.grecaptcha) {
-          window.grecaptcha.reset(widgetIdRef.current);
+          try {
+            window.grecaptcha.reset(widgetIdRef.current);
+          } catch (resetError) {
+            console.error("Error resetting reCAPTCHA:", resetError);
+          }
         }
       } else {
         setSubmitStatus({
           type: "error",
           message: data.error || "Failed to send message. Please try again."
         });
-        // Reset reCAPTCHA on error
+        // Reset reCAPTCHA on error so user can try again
         setRecaptchaToken("");
         if (widgetIdRef.current !== null && window.grecaptcha) {
-          window.grecaptcha.reset(widgetIdRef.current);
+          try {
+            window.grecaptcha.reset(widgetIdRef.current);
+          } catch (resetError) {
+            console.error("Error resetting reCAPTCHA:", resetError);
+          }
         }
       }
     } catch (error) {
+      console.error("Form submission error:", error);
       setSubmitStatus({
         type: "error",
         message: "Failed to send message. Please try again later."
@@ -159,7 +175,11 @@ export default function ContactForm() {
       // Reset reCAPTCHA on error
       setRecaptchaToken("");
       if (widgetIdRef.current !== null && window.grecaptcha) {
-        window.grecaptcha.reset(widgetIdRef.current);
+        try {
+          window.grecaptcha.reset(widgetIdRef.current);
+        } catch (resetError) {
+          console.error("Error resetting reCAPTCHA:", resetError);
+        }
       }
     } finally {
       setIsSubmitting(false);
