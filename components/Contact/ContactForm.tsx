@@ -9,6 +9,7 @@ declare global {
       ready: (callback: () => void) => void;
       render: (element: HTMLElement, options: { sitekey: string; callback: (token: string) => void }) => number;
       reset: (widgetId: number) => void;
+      getResponse: (widgetId: number) => string;
     };
   }
 }
@@ -85,7 +86,20 @@ export default function ContactForm() {
       return;
     }
 
-    if (!recaptchaToken) {
+    // Get fresh token right before submission to avoid expiration
+    let currentToken = recaptchaToken;
+    if (widgetIdRef.current !== null && window.grecaptcha) {
+      try {
+        const freshToken = window.grecaptcha.getResponse(widgetIdRef.current);
+        if (freshToken) {
+          currentToken = freshToken;
+        }
+      } catch (error) {
+        console.error("Error getting reCAPTCHA token:", error);
+      }
+    }
+
+    if (!currentToken) {
       setSubmitStatus({
         type: "error",
         message: "Please complete the reCAPTCHA verification."
@@ -104,7 +118,7 @@ export default function ContactForm() {
         },
         body: JSON.stringify({
           ...formData,
-          recaptchaToken,
+          recaptchaToken: currentToken,
         }),
       });
 
