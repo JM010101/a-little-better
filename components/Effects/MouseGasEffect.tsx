@@ -16,7 +16,7 @@ interface Particle {
   rotationSpeed: number;
 }
 
-const PARTICLE_COUNT = 30;
+const PARTICLE_COUNT = 40;
 const COLORS = [
   { hue: 200, name: "blue" },      // Blue
   { hue: 260, name: "purple" },    // Purple
@@ -37,30 +37,32 @@ export default function MouseGasEffect() {
       const newX = e.clientX;
       const newY = e.clientY;
       
-      // Calculate velocity with more intensity
-      const vx = (newX - lastMousePosRef.current.x) * 0.3;
-      const vy = (newY - lastMousePosRef.current.y) * 0.3;
+      // Calculate velocity for smooth flow
+      const vx = (newX - lastMousePosRef.current.x) * 0.5;
+      const vy = (newY - lastMousePosRef.current.y) * 0.5;
 
       lastMousePosRef.current = { x: newX, y: newY };
       setMousePos({ x: newX, y: newY });
 
-      // Create more particles with varied properties
-      const newParticles: Particle[] = Array.from({ length: 5 }, (_, i) => {
+      // Create flowing particles - like water stream
+      const newParticles: Particle[] = Array.from({ length: 4 }, (_, i) => {
         const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-        const angle = (Math.PI * 2 * i) / 5 + Math.random() * 0.5;
-        const speed = 2 + Math.random() * 4;
+        // Create a trailing effect - particles follow behind the cursor
+        const trailOffset = i * 8; // Stagger particles behind cursor
+        const flowAngle = Math.atan2(vy, vx) || 0; // Direction of mouse movement
         
         return {
           id: Date.now() + Math.random() + i,
-          x: newX + (Math.random() - 0.5) * 30,
-          y: newY + (Math.random() - 0.5) * 30,
-          vx: vx + Math.cos(angle) * speed,
-          vy: vy + Math.sin(angle) * speed,
-          size: 20 + Math.random() * 40, // Much bigger: 20-60px
-          hue: color.hue + (Math.random() - 0.5) * 30,
-          opacity: 0.6 + Math.random() * 0.4,
+          x: newX - Math.cos(flowAngle) * trailOffset + (Math.random() - 0.5) * 15,
+          y: newY - Math.sin(flowAngle) * trailOffset + (Math.random() - 0.5) * 15,
+          // Smooth flowing velocity - follow the mouse direction
+          vx: vx * 0.8 + (Math.random() - 0.5) * 0.5,
+          vy: vy * 0.8 + (Math.random() - 0.5) * 0.5,
+          size: 40 + Math.random() * 60, // Much bigger: 40-100px
+          hue: color.hue + (Math.random() - 0.5) * 20,
+          opacity: 0.5 + Math.random() * 0.3,
           rotation: Math.random() * 360,
-          rotationSpeed: (Math.random() - 0.5) * 5,
+          rotationSpeed: (Math.random() - 0.5) * 2, // Slower rotation for smoother flow
         };
       });
 
@@ -80,32 +82,43 @@ export default function MouseGasEffect() {
     };
   }, []);
 
-  // Animate particles with more dynamic movement
+  // Animate particles with smooth water-like flow
   useEffect(() => {
     const animate = () => {
       setParticles((prev) => {
         return prev
           .map((p) => {
-            // Add some turbulence for more flexible movement
-            const turbulenceX = (Math.sin(Date.now() * 0.001 + p.id) * 0.5);
-            const turbulenceY = (Math.cos(Date.now() * 0.001 + p.id) * 0.5);
+            // Smooth, flowing movement - like water
+            // Gentle drift towards mouse position for continuity
+            const dx = mousePos.x - p.x;
+            const dy = mousePos.y - p.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // Gentle pull towards cursor for flowing effect
+            const pullStrength = distance > 100 ? 0.02 : 0.01;
+            const pullX = dx * pullStrength;
+            const pullY = dy * pullStrength;
+            
+            // Very gentle turbulence for organic flow
+            const flowTurbulence = Math.sin(Date.now() * 0.0005 + p.id) * 0.3;
             
             return {
               ...p,
-              x: p.x + p.vx + turbulenceX,
-              y: p.y + p.vy + turbulenceY,
-              vx: p.vx * 0.92 + turbulenceX * 0.1,
-              vy: p.vy * 0.92 + turbulenceY * 0.1,
+              x: p.x + p.vx + pullX + flowTurbulence,
+              y: p.y + p.vy + pullY + flowTurbulence,
+              // Smooth velocity decay - like water slowing down
+              vx: p.vx * 0.96 + pullX,
+              vy: p.vy * 0.96 + pullY,
               rotation: p.rotation + p.rotationSpeed,
-              opacity: p.opacity * 0.98,
-              size: p.size * 0.99,
+              opacity: p.opacity * 0.985, // Slower fade for longer trails
+              size: p.size * 0.995, // Very slow size reduction
             };
           })
           .filter((p) => {
             const distance = Math.sqrt(
               Math.pow(p.x - mousePos.x, 2) + Math.pow(p.y - mousePos.y, 2)
             );
-            return distance < 500 && p.opacity > 0.1 && p.size > 5;
+            return distance < 800 && p.opacity > 0.05 && p.size > 10;
           });
       });
       animationFrameRef.current = requestAnimationFrame(animate);
@@ -121,7 +134,7 @@ export default function MouseGasEffect() {
   }, [mousePos]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-[9998] overflow-hidden">
       {particles.map((particle) => (
         <GasParticle
           key={particle.id}
