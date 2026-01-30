@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useSpring, animated } from "@react-spring/web";
+import { useSpring, animated, to } from "@react-spring/web";
 
 export default function FooterColumn({ data, index }: { data: any; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -61,13 +61,16 @@ function InteractiveLink({ href, name, delay }: { href: string; name: string; de
       onMouseLeave={() => setIsHovered(false)}
       className="mb-4"
     >
-      <Link
-        href={href}
-        className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors relative inline-block"
+      <animated.div
         style={{
-          transform: linkAnimation.transform.to((x) => `translateX(${x}px)`),
+          display: "inline-block",
+          transform: linkAnimation.transform,
         }}
       >
+        <Link
+          href={href}
+          className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors relative inline-block"
+        >
         {name}
         <animated.div
           style={{
