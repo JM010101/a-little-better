@@ -18,7 +18,7 @@ interface Particle {
   twinkle: number;
 }
 
-const PARTICLE_COUNT = 50;
+const PARTICLE_COUNT = 100;
 const PARTICLE_TYPES = [
   { type: "star" as const, color: "#FFD700", size: [8, 15] },      // Yellow stars
   { type: "star" as const, color: "#FFB6C1", size: [6, 12] },      // Pink stars
@@ -46,24 +46,24 @@ export default function MouseGasEffect() {
       setMousePos({ x: newX, y: newY });
 
       // Create magical sparkle particles - stars and dots
-      const newParticles: Particle[] = Array.from({ length: 6 }, (_, i) => {
+      const newParticles: Particle[] = Array.from({ length: 12 }, (_, i) => {
         const particleType = PARTICLE_TYPES[Math.floor(Math.random() * PARTICLE_TYPES.length)];
         const [minSize, maxSize] = particleType.size;
         const size = minSize + Math.random() * (maxSize - minSize);
         
         // Create a trailing effect - particles follow behind the cursor
-        const trailOffset = i * 5; // Stagger particles behind cursor
+        const trailOffset = i * 3; // Stagger particles behind cursor (closer together for longer trail)
         const flowAngle = Math.atan2(vy, vx) || Math.random() * Math.PI * 2;
-        const spreadAngle = flowAngle + (Math.random() - 0.5) * 0.8;
-        const spreadDistance = Math.random() * 20;
+        const spreadAngle = flowAngle + (Math.random() - 0.5) * 1.2;
+        const spreadDistance = Math.random() * 30;
         
         return {
           id: Date.now() + Math.random() + i,
           x: newX - Math.cos(flowAngle) * trailOffset + Math.cos(spreadAngle) * spreadDistance,
           y: newY - Math.sin(flowAngle) * trailOffset + Math.sin(spreadAngle) * spreadDistance,
           // Gentle velocity - particles drift away from cursor
-          vx: vx * 0.3 + Math.cos(spreadAngle) * (0.5 + Math.random() * 1),
-          vy: vy * 0.3 + Math.sin(spreadAngle) * (0.5 + Math.random() * 1),
+          vx: vx * 0.4 + Math.cos(spreadAngle) * (0.3 + Math.random() * 0.8),
+          vy: vy * 0.4 + Math.sin(spreadAngle) * (0.3 + Math.random() * 0.8),
           size,
           type: particleType.type,
           color: particleType.color,
@@ -110,11 +110,11 @@ export default function MouseGasEffect() {
               ...p,
               x: p.x + p.vx + floatX,
               y: p.y + p.vy + floatY,
-              // Slow velocity decay - particles drift slowly
-              vx: p.vx * 0.97,
-              vy: p.vy * 0.97,
+              // Very slow velocity decay - particles drift slowly for longer trail
+              vx: p.vx * 0.98,
+              vy: p.vy * 0.98,
               rotation: p.rotation + p.rotationSpeed,
-              opacity: p.opacity * 0.99 * twinkle, // Twinkling opacity
+              opacity: p.opacity * 0.995 * twinkle, // Very slow fade for longer trail
               size: p.size,
               twinkle: twinkle,
             };
@@ -123,7 +123,7 @@ export default function MouseGasEffect() {
             const distance = Math.sqrt(
               Math.pow(p.x - mousePos.x, 2) + Math.pow(p.y - mousePos.y, 2)
             );
-            return distance < 600 && p.opacity > 0.1;
+            return distance < 1200 && p.opacity > 0.05; // Longer trail distance
           });
       });
       animationFrameRef.current = requestAnimationFrame(animate);
