@@ -13,10 +13,11 @@ function TeamMemberCard({ member }: { member: TeamMember }) {
   const [imageError, setImageError] = useState(false);
   const isHiring = member.name === "hiring...";
   const showImage = member.image && !imageError && !isHiring;
-  const needsBottomMargin = member.name === "Andrea Montrone" || member.name === "Mohammad Asadi";
+  // Adjust image position for Andrea and Mohammad to show their heads properly
+  const needsImageAdjustment = member.name === "Andrea Montrone" || member.name === "Mohammad Asadi";
 
   return (
-    <div className={`flex flex-col items-center text-center p-6 rounded-lg hover:shadow-lg transition-all ${needsBottomMargin ? "mt-8" : ""}`}>
+    <div className="flex flex-col items-center text-center p-6 rounded-lg hover:shadow-lg transition-all">
       <div className="relative w-48 h-48 mb-4 rounded-full overflow-hidden bg-neutral-200 flex items-center justify-center">
         {showImage ? (
           <Image
@@ -24,6 +25,7 @@ function TeamMemberCard({ member }: { member: TeamMember }) {
             alt={member.name}
             fill
             className="object-cover"
+            style={needsImageAdjustment ? { objectPosition: "center 20%" } : { objectPosition: "center center" }}
             onError={() => setImageError(true)}
           />
         ) : (
