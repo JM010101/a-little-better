@@ -1,5 +1,9 @@
+"use client";
+
 import { BoxIcon, Globe, Code, Palette, Zap, Shield, Rocket, Layers } from "lucide-react";
 import CardFeature from "./CardFeature";
+import { useSpring, animated } from "@react-spring/web";
+import { useRef, useEffect, useState } from "react";
 
 const features = [
   {
@@ -61,20 +65,57 @@ const features = [
 ];
 
 export default function Features() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, []);
+
+  const titleAnimation = useSpring({
+    opacity: isVisible ? 1 : 0,
+    transform: isVisible ? "translateY(0px)" : "translateY(20px)",
+    config: { tension: 100, friction: 50 }
+  });
+
+  const subtitleAnimation = useSpring({
+    opacity: isVisible ? 1 : 0,
+    transform: isVisible ? "translateY(0px)" : "translateY(20px)",
+    delay: 100,
+    config: { tension: 100, friction: 50 }
+  });
+
   return (
     <>
-      <div className="mt-28 mb-20 flex flex-col justify-start items-center mx-6 md:mx-0 ">
+      <div ref={ref} className="mt-28 mb-20 flex flex-col justify-start items-center mx-6 md:mx-0 ">
         <div className="col-span-4 bg-white flex flex-col justify-center items-center">
-          <p className="text-4xl font-medium text-center">
+          <animated.p style={titleAnimation} className="text-4xl font-medium text-center">
             Our Products
-          </p>
-          <p className="text-neutral-600 text-xl text-center max-w-[700px] mt-4">
+          </animated.p>
+          <animated.p style={subtitleAnimation} className="text-neutral-600 text-xl text-center max-w-[700px] mt-4">
             These are the products we&apos;ve created. Please browse our website to find similar products and contact us.
-          </p>
+          </animated.p>
         </div>
         <div className="flex flex-col justify-start md:grid md:grid-cols-3 w-full max-w-[1000px] gap-4 mt-8">
           {features.map((card, index) => (
-            <CardFeature key={index} {...card} />
+            <CardFeature key={index} {...card} index={index} />
           ))}
         </div>
       </div>

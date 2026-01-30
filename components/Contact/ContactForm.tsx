@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { useSpring, animated } from "@react-spring/web";
 
 declare global {
   interface Window {
@@ -186,8 +187,21 @@ export default function ContactForm() {
     }
   };
 
+  const formAnimation = useSpring({
+    from: { opacity: 0, transform: "translateY(20px)" },
+    to: { opacity: 1, transform: "translateY(0px)" },
+    delay: 200,
+    config: { tension: 100, friction: 50 }
+  });
+
+  const statusAnimation = useSpring({
+    opacity: submitStatus.type ? 1 : 0,
+    transform: submitStatus.type ? "translateY(0px)" : "translateY(-10px)",
+    config: { tension: 200, friction: 25 }
+  });
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <animated.form onSubmit={handleSubmit} style={formAnimation} className="space-y-6">
       <div>
         <label
           htmlFor="name"
@@ -265,7 +279,8 @@ export default function ContactForm() {
       </div>
 
       {submitStatus.type && (
-        <div
+        <animated.div
+          style={statusAnimation}
           className={`p-4 rounded-md ${
             submitStatus.type === "success"
               ? "bg-green-50 text-green-800 border border-green-200"
@@ -273,7 +288,7 @@ export default function ContactForm() {
           }`}
         >
           {submitStatus.message}
-        </div>
+        </animated.div>
       )}
 
       {/* reCAPTCHA v2 Checkbox */}
@@ -312,6 +327,6 @@ export default function ContactForm() {
         </a>{" "}
         apply.
       </div>
-    </form>
+    </animated.form>
   );
 }
