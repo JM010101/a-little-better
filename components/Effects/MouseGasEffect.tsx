@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSpring, animated, to } from "@react-spring/web";
 
 interface Particle {
@@ -10,20 +10,21 @@ interface Particle {
   vx: number;
   vy: number;
   size: number;
-  hue: number;
+  type: "star" | "dot" | "sparkle";
+  color: string;
   opacity: number;
   rotation: number;
   rotationSpeed: number;
+  twinkle: number;
 }
 
-const PARTICLE_COUNT = 40;
-const COLORS = [
-  { hue: 200, name: "blue" },      // Blue
-  { hue: 260, name: "purple" },    // Purple
-  { hue: 320, name: "pink" },      // Pink
-  { hue: 280, name: "violet" },    // Violet
-  { hue: 240, name: "indigo" },    // Indigo
-  { hue: 300, name: "magenta" },   // Magenta
+const PARTICLE_COUNT = 50;
+const PARTICLE_TYPES = [
+  { type: "star" as const, color: "#FFD700", size: [8, 15] },      // Yellow stars
+  { type: "star" as const, color: "#FFB6C1", size: [6, 12] },      // Pink stars
+  { type: "star" as const, color: "#FFFFFF", size: [4, 8] },       // White stars
+  { type: "dot" as const, color: "#FFD700", size: [2, 4] },        // Yellow dots
+  { type: "sparkle" as const, color: "#FFB6C1", size: [3, 6] },    // Pink sparkles
 ];
 
 export default function MouseGasEffect() {
@@ -44,25 +45,32 @@ export default function MouseGasEffect() {
       lastMousePosRef.current = { x: newX, y: newY };
       setMousePos({ x: newX, y: newY });
 
-      // Create flowing particles - like water stream
-      const newParticles: Particle[] = Array.from({ length: 4 }, (_, i) => {
-        const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      // Create magical sparkle particles - stars and dots
+      const newParticles: Particle[] = Array.from({ length: 6 }, (_, i) => {
+        const particleType = PARTICLE_TYPES[Math.floor(Math.random() * PARTICLE_TYPES.length)];
+        const [minSize, maxSize] = particleType.size;
+        const size = minSize + Math.random() * (maxSize - minSize);
+        
         // Create a trailing effect - particles follow behind the cursor
-        const trailOffset = i * 8; // Stagger particles behind cursor
-        const flowAngle = Math.atan2(vy, vx) || 0; // Direction of mouse movement
+        const trailOffset = i * 5; // Stagger particles behind cursor
+        const flowAngle = Math.atan2(vy, vx) || Math.random() * Math.PI * 2;
+        const spreadAngle = flowAngle + (Math.random() - 0.5) * 0.8;
+        const spreadDistance = Math.random() * 20;
         
         return {
           id: Date.now() + Math.random() + i,
-          x: newX - Math.cos(flowAngle) * trailOffset + (Math.random() - 0.5) * 15,
-          y: newY - Math.sin(flowAngle) * trailOffset + (Math.random() - 0.5) * 15,
-          // Smooth flowing velocity - follow the mouse direction
-          vx: vx * 0.8 + (Math.random() - 0.5) * 0.5,
-          vy: vy * 0.8 + (Math.random() - 0.5) * 0.5,
-          size: 40 + Math.random() * 60, // Much bigger: 40-100px
-          hue: color.hue + (Math.random() - 0.5) * 20,
-          opacity: 0.5 + Math.random() * 0.3,
+          x: newX - Math.cos(flowAngle) * trailOffset + Math.cos(spreadAngle) * spreadDistance,
+          y: newY - Math.sin(flowAngle) * trailOffset + Math.sin(spreadAngle) * spreadDistance,
+          // Gentle velocity - particles drift away from cursor
+          vx: vx * 0.3 + Math.cos(spreadAngle) * (0.5 + Math.random() * 1),
+          vy: vy * 0.3 + Math.sin(spreadAngle) * (0.5 + Math.random() * 1),
+          size,
+          type: particleType.type,
+          color: particleType.color,
+          opacity: 0.7 + Math.random() * 0.3,
           rotation: Math.random() * 360,
-          rotationSpeed: (Math.random() - 0.5) * 2, // Slower rotation for smoother flow
+          rotationSpeed: (Math.random() - 0.5) * 3,
+          twinkle: Math.random(), // For twinkling effect
         };
       });
 
@@ -82,43 +90,40 @@ export default function MouseGasEffect() {
     };
   }, []);
 
-  // Animate particles with smooth water-like flow
+  // Animate particles with magical sparkle effect
   useEffect(() => {
     const animate = () => {
       setParticles((prev) => {
         return prev
           .map((p) => {
-            // Smooth, flowing movement - like water
-            // Gentle drift towards mouse position for continuity
-            const dx = mousePos.x - p.x;
-            const dy = mousePos.y - p.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+            // Magical floating movement - particles drift away gently
+            const time = Date.now() * 0.001;
             
-            // Gentle pull towards cursor for flowing effect
-            const pullStrength = distance > 100 ? 0.02 : 0.01;
-            const pullX = dx * pullStrength;
-            const pullY = dy * pullStrength;
+            // Gentle floating motion
+            const floatX = Math.sin(time * 0.5 + p.id) * 0.3;
+            const floatY = Math.cos(time * 0.5 + p.id) * 0.3;
             
-            // Very gentle turbulence for organic flow
-            const flowTurbulence = Math.sin(Date.now() * 0.0005 + p.id) * 0.3;
+            // Twinkling effect
+            const twinkle = 0.5 + Math.sin(time * 3 + p.id) * 0.5;
             
             return {
               ...p,
-              x: p.x + p.vx + pullX + flowTurbulence,
-              y: p.y + p.vy + pullY + flowTurbulence,
-              // Smooth velocity decay - like water slowing down
-              vx: p.vx * 0.96 + pullX,
-              vy: p.vy * 0.96 + pullY,
+              x: p.x + p.vx + floatX,
+              y: p.y + p.vy + floatY,
+              // Slow velocity decay - particles drift slowly
+              vx: p.vx * 0.97,
+              vy: p.vy * 0.97,
               rotation: p.rotation + p.rotationSpeed,
-              opacity: p.opacity * 0.985, // Slower fade for longer trails
-              size: p.size * 0.995, // Very slow size reduction
+              opacity: p.opacity * 0.99 * twinkle, // Twinkling opacity
+              size: p.size,
+              twinkle: twinkle,
             };
           })
           .filter((p) => {
             const distance = Math.sqrt(
               Math.pow(p.x - mousePos.x, 2) + Math.pow(p.y - mousePos.y, 2)
             );
-            return distance < 800 && p.opacity > 0.05 && p.size > 10;
+            return distance < 600 && p.opacity > 0.1;
           });
       });
       animationFrameRef.current = requestAnimationFrame(animate);
@@ -135,8 +140,24 @@ export default function MouseGasEffect() {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[9998] overflow-hidden">
+      {/* Cursor glow effect */}
+      <div
+        style={{
+          position: "absolute",
+          left: `${mousePos.x}px`,
+          top: `${mousePos.y}px`,
+          width: "40px",
+          height: "40px",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, rgba(255, 182, 193, 0.3) 50%, transparent 100%)",
+          transform: "translate(-50%, -50%)",
+          pointerEvents: "none",
+          filter: "blur(8px)",
+        }}
+      />
+      
       {particles.map((particle) => (
-        <GasParticle
+        <SparkleParticle
           key={particle.id}
           particle={particle}
         />
@@ -145,24 +166,24 @@ export default function MouseGasEffect() {
   );
 }
 
-function GasParticle({ particle }: { particle: Particle }) {
+function SparkleParticle({ particle }: { particle: Particle }) {
   const [spring, api] = useSpring(() => ({
     from: {
       x: particle.x,
       y: particle.y,
-      scale: 1,
+      scale: 0,
       opacity: 0,
       rotate: particle.rotation,
     },
     to: {
       x: particle.x,
       y: particle.y,
-      scale: 0.3,
+      scale: 1,
       opacity: particle.opacity,
       rotate: particle.rotation,
     },
     config: {
-      tension: 100,
+      tension: 200,
       friction: 20,
     },
   }));
@@ -172,18 +193,55 @@ function GasParticle({ particle }: { particle: Particle }) {
       to: {
         x: particle.x,
         y: particle.y,
-        scale: 0.3,
-        opacity: particle.opacity,
+        scale: 1,
+        opacity: particle.opacity * particle.twinkle,
         rotate: particle.rotation,
       },
     });
-  }, [particle.x, particle.y, particle.opacity, particle.rotation, api]);
+  }, [particle.x, particle.y, particle.opacity, particle.rotation, particle.twinkle, api]);
 
-  // Create vibrant gradient with multiple colors
-  const hue1 = particle.hue;
-  const hue2 = (particle.hue + 60) % 360;
-  const hue3 = (particle.hue + 120) % 360;
+  // Render different particle types
+  if (particle.type === "star") {
+    // Four-pointed star
+    const points = 4;
+    const outerRadius = particle.size / 2;
+    const innerRadius = outerRadius * 0.4;
+    
+    return (
+      <animated.div
+        style={{
+          position: "absolute",
+          left: spring.x.to((x) => `${x}px`),
+          top: spring.y.to((y) => `${y}px`),
+          width: `${particle.size}px`,
+          height: `${particle.size}px`,
+          transform: to(
+            [spring.scale, spring.rotate],
+            (scale, rotate) => `translate(-50%, -50%) scale(${scale}) rotate(${rotate}deg)`
+          ),
+          opacity: spring.opacity,
+          pointerEvents: "none",
+          filter: "drop-shadow(0 0 2px rgba(255, 255, 255, 0.8))",
+        }}
+      >
+        <svg width={particle.size} height={particle.size} viewBox={`0 0 ${particle.size} ${particle.size}`}>
+          <polygon
+            points={Array.from({ length: points * 2 }, (_, i) => {
+              const angle = (i * Math.PI) / points - Math.PI / 2;
+              const radius = i % 2 === 0 ? outerRadius : innerRadius;
+              const x = particle.size / 2 + radius * Math.cos(angle);
+              const y = particle.size / 2 + radius * Math.sin(angle);
+              return `${x},${y}`;
+            }).join(" ")}
+            fill={particle.color}
+            opacity={spring.opacity.get()}
+          />
+        </svg>
+      </animated.div>
+    );
+  }
 
+  // Dot or sparkle - circular
   return (
     <animated.div
       style={{
@@ -193,23 +251,12 @@ function GasParticle({ particle }: { particle: Particle }) {
         width: `${particle.size}px`,
         height: `${particle.size}px`,
         borderRadius: "50%",
-        background: `radial-gradient(circle at 30% 30%, 
-          hsla(${hue1}, 100%, 70%, ${particle.opacity}) 0%,
-          hsla(${hue2}, 100%, 65%, ${particle.opacity * 0.8}) 40%,
-          hsla(${hue3}, 100%, 60%, ${particle.opacity * 0.5}) 70%,
-          hsla(${hue1}, 100%, 50%, ${particle.opacity * 0.2}) 100%)`,
-        transform: to(
-          [spring.scale, spring.rotate],
-          (scale, rotate) => `translate(-50%, -50%) scale(${scale}) rotate(${rotate}deg)`
-        ),
+        background: particle.color,
+        transform: spring.scale.to((scale) => `translate(-50%, -50%) scale(${scale})`),
         opacity: spring.opacity,
         pointerEvents: "none",
-        filter: `blur(${particle.size * 0.15}px)`,
-        boxShadow: `
-          0 0 ${particle.size * 0.8}px hsla(${hue1}, 100%, 70%, ${particle.opacity * 0.6}),
-          0 0 ${particle.size * 1.2}px hsla(${hue2}, 100%, 65%, ${particle.opacity * 0.4}),
-          0 0 ${particle.size * 1.6}px hsla(${hue3}, 100%, 60%, ${particle.opacity * 0.2})
-        `,
+        boxShadow: `0 0 ${particle.size * 2}px ${particle.color}`,
+        filter: particle.type === "sparkle" ? "blur(1px)" : "none",
       }}
     />
   );
