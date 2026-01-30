@@ -37,36 +37,6 @@ const developers: TeamMember[] = [
     name: "Rafael Silverio",
     role: "Backend Developer",
     image: "/team/Rafael Silverio - backend developer.jpg"
-  },
-  {
-    name: "hiring...",
-    role: "Senior Full-Stack Developer",
-    image: ""
-  },
-  {
-    name: "hiring...",
-    role: "Frontend Developer",
-    image: ""
-  },
-  {
-    name: "hiring...",
-    role: "Backend Developer",
-    image: ""
-  },
-  {
-    name: "hiring...",
-    role: "DevOps Engineer",
-    image: ""
-  },
-  {
-    name: "hiring...",
-    role: "Mobile Developer",
-    image: ""
-  },
-  {
-    name: "hiring...",
-    role: "UI/UX Developer",
-    image: ""
   }
 ];
 
