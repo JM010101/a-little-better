@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useSpring, animated } from "@react-spring/web";
+import { useEffect, useState, useRef, useMemo } from "react";
+import { useSpring, animated, to } from "@react-spring/web";
 
 interface Particle {
   id: number;
@@ -185,10 +185,9 @@ function GasParticle({ particle }: { particle: Particle }) {
           hsla(${hue2}, 100%, 65%, ${particle.opacity * 0.8}) 40%,
           hsla(${hue3}, 100%, 60%, ${particle.opacity * 0.5}) 70%,
           hsla(${hue1}, 100%, 50%, ${particle.opacity * 0.2}) 100%)`,
-        transform: spring.scale.to((scale) => 
-          spring.rotate.to((rotate) => 
-            `translate(-50%, -50%) scale(${scale}) rotate(${rotate}deg)`
-          )
+        transform: to(
+          [spring.scale, spring.rotate],
+          (scale, rotate) => `translate(-50%, -50%) scale(${scale}) rotate(${rotate}deg)`
         ),
         opacity: spring.opacity,
         pointerEvents: "none",
