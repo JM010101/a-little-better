@@ -9,10 +9,22 @@ interface Particle {
   y: number;
   vx: number;
   vy: number;
+  size: number;
+  hue: number;
+  opacity: number;
+  rotation: number;
+  rotationSpeed: number;
 }
 
-const PARTICLE_COUNT = 15;
-const PARTICLE_LIFETIME = 2000;
+const PARTICLE_COUNT = 30;
+const COLORS = [
+  { hue: 200, name: "blue" },      // Blue
+  { hue: 260, name: "purple" },    // Purple
+  { hue: 320, name: "pink" },      // Pink
+  { hue: 280, name: "violet" },    // Violet
+  { hue: 240, name: "indigo" },    // Indigo
+  { hue: 300, name: "magenta" },   // Magenta
+];
 
 export default function MouseGasEffect() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -25,25 +37,35 @@ export default function MouseGasEffect() {
       const newX = e.clientX;
       const newY = e.clientY;
       
-      // Calculate velocity
-      const vx = (newX - lastMousePosRef.current.x) * 0.1;
-      const vy = (newY - lastMousePosRef.current.y) * 0.1;
+      // Calculate velocity with more intensity
+      const vx = (newX - lastMousePosRef.current.x) * 0.3;
+      const vy = (newY - lastMousePosRef.current.y) * 0.3;
 
       lastMousePosRef.current = { x: newX, y: newY };
       setMousePos({ x: newX, y: newY });
 
-      // Create multiple particles for smoother effect
-      const newParticles: Particle[] = Array.from({ length: 3 }, (_, i) => ({
-        id: Date.now() + Math.random() + i,
-        x: newX + (Math.random() - 0.5) * 10,
-        y: newY + (Math.random() - 0.5) * 10,
-        vx: vx + (Math.random() - 0.5) * 2,
-        vy: vy + (Math.random() - 0.5) * 2,
-      }));
+      // Create more particles with varied properties
+      const newParticles: Particle[] = Array.from({ length: 5 }, (_, i) => {
+        const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        const angle = (Math.PI * 2 * i) / 5 + Math.random() * 0.5;
+        const speed = 2 + Math.random() * 4;
+        
+        return {
+          id: Date.now() + Math.random() + i,
+          x: newX + (Math.random() - 0.5) * 30,
+          y: newY + (Math.random() - 0.5) * 30,
+          vx: vx + Math.cos(angle) * speed,
+          vy: vy + Math.sin(angle) * speed,
+          size: 20 + Math.random() * 40, // Much bigger: 20-60px
+          hue: color.hue + (Math.random() - 0.5) * 30,
+          opacity: 0.6 + Math.random() * 0.4,
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 5,
+        };
+      });
 
       setParticles((prev) => {
         const updated = [...prev, ...newParticles];
-        // Keep only last N particles
         return updated.slice(-PARTICLE_COUNT);
       });
     };
@@ -58,24 +80,32 @@ export default function MouseGasEffect() {
     };
   }, []);
 
-  // Animate particles
+  // Animate particles with more dynamic movement
   useEffect(() => {
     const animate = () => {
       setParticles((prev) => {
         return prev
-          .map((p) => ({
-            ...p,
-            x: p.x + p.vx,
-            y: p.y + p.vy,
-            vx: p.vx * 0.95,
-            vy: p.vy * 0.95,
-          }))
+          .map((p) => {
+            // Add some turbulence for more flexible movement
+            const turbulenceX = (Math.sin(Date.now() * 0.001 + p.id) * 0.5);
+            const turbulenceY = (Math.cos(Date.now() * 0.001 + p.id) * 0.5);
+            
+            return {
+              ...p,
+              x: p.x + p.vx + turbulenceX,
+              y: p.y + p.vy + turbulenceY,
+              vx: p.vx * 0.92 + turbulenceX * 0.1,
+              vy: p.vy * 0.92 + turbulenceY * 0.1,
+              rotation: p.rotation + p.rotationSpeed,
+              opacity: p.opacity * 0.98,
+              size: p.size * 0.99,
+            };
+          })
           .filter((p) => {
-            // Remove particles that are too far or have low velocity
             const distance = Math.sqrt(
               Math.pow(p.x - mousePos.x, 2) + Math.pow(p.y - mousePos.y, 2)
             );
-            return distance < 200 && (Math.abs(p.vx) > 0.1 || Math.abs(p.vy) > 0.1);
+            return distance < 500 && p.opacity > 0.1 && p.size > 5;
           });
       });
       animationFrameRef.current = requestAnimationFrame(animate);
@@ -92,72 +122,54 @@ export default function MouseGasEffect() {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {particles.map((particle, index) => {
-        const size = 6 + Math.random() * 4;
-        const opacity = 0.3 + Math.random() * 0.4;
-        const hue = 200 + Math.random() * 60; // Blue to purple range
-
-        return (
-          <GasParticle
-            key={particle.id}
-            x={particle.x}
-            y={particle.y}
-            size={size}
-            opacity={opacity}
-            hue={hue}
-            index={index}
-          />
-        );
-      })}
+      {particles.map((particle) => (
+        <GasParticle
+          key={particle.id}
+          particle={particle}
+        />
+      ))}
     </div>
   );
 }
 
-function GasParticle({
-  x,
-  y,
-  size,
-  opacity,
-  hue,
-  index,
-}: {
-  x: number;
-  y: number;
-  size: number;
-  opacity: number;
-  hue: number;
-  index: number;
-}) {
+function GasParticle({ particle }: { particle: Particle }) {
   const [spring, api] = useSpring(() => ({
     from: {
-      x,
-      y,
+      x: particle.x,
+      y: particle.y,
       scale: 1,
       opacity: 0,
+      rotate: particle.rotation,
     },
     to: {
-      x,
-      y,
-      scale: 0,
-      opacity: opacity,
+      x: particle.x,
+      y: particle.y,
+      scale: 0.3,
+      opacity: particle.opacity,
+      rotate: particle.rotation,
     },
     config: {
-      tension: 150,
-      friction: 25,
+      tension: 100,
+      friction: 20,
     },
-    delay: index * 30,
   }));
 
   useEffect(() => {
     api.start({
       to: {
-        x,
-        y,
-        scale: 0,
-        opacity: opacity,
+        x: particle.x,
+        y: particle.y,
+        scale: 0.3,
+        opacity: particle.opacity,
+        rotate: particle.rotation,
       },
     });
-  }, [x, y, api, opacity]);
+  }, [particle.x, particle.y, particle.opacity, particle.rotation, api]);
+
+  // Create vibrant gradient with multiple colors
+  const hue1 = particle.hue;
+  const hue2 = (particle.hue + 60) % 360;
+  const hue3 = (particle.hue + 120) % 360;
 
   return (
     <animated.div
@@ -165,15 +177,27 @@ function GasParticle({
         position: "absolute",
         left: spring.x.to((x) => `${x}px`),
         top: spring.y.to((y) => `${y}px`),
-        width: `${size}px`,
-        height: `${size}px`,
+        width: `${particle.size}px`,
+        height: `${particle.size}px`,
         borderRadius: "50%",
-        background: `radial-gradient(circle, hsla(${hue}, 70%, 60%, ${opacity}) 0%, hsla(${hue + 20}, 70%, 50%, ${opacity * 0.5}) 100%)`,
-        transform: spring.scale.to((scale) => `translate(-50%, -50%) scale(${scale})`),
+        background: `radial-gradient(circle at 30% 30%, 
+          hsla(${hue1}, 100%, 70%, ${particle.opacity}) 0%,
+          hsla(${hue2}, 100%, 65%, ${particle.opacity * 0.8}) 40%,
+          hsla(${hue3}, 100%, 60%, ${particle.opacity * 0.5}) 70%,
+          hsla(${hue1}, 100%, 50%, ${particle.opacity * 0.2}) 100%)`,
+        transform: spring.scale.to((scale) => 
+          spring.rotate.to((rotate) => 
+            `translate(-50%, -50%) scale(${scale}) rotate(${rotate}deg)`
+          )
+        ),
         opacity: spring.opacity,
         pointerEvents: "none",
-        filter: "blur(3px)",
-        boxShadow: `0 0 ${size * 2}px hsla(${hue}, 70%, 60%, ${opacity * 0.5})`,
+        filter: `blur(${particle.size * 0.15}px)`,
+        boxShadow: `
+          0 0 ${particle.size * 0.8}px hsla(${hue1}, 100%, 70%, ${particle.opacity * 0.6}),
+          0 0 ${particle.size * 1.2}px hsla(${hue2}, 100%, 65%, ${particle.opacity * 0.4}),
+          0 0 ${particle.size * 1.6}px hsla(${hue3}, 100%, 60%, ${particle.opacity * 0.2})
+        `,
       }}
     />
   );
