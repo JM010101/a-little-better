@@ -13,9 +13,10 @@ function TeamMemberCard({ member }: { member: TeamMember }) {
   const [imageError, setImageError] = useState(false);
   const isHiring = member.name === "hiring...";
   const showImage = member.image && !imageError && !isHiring;
+  const needsBottomMargin = member.name === "Andrea Montrone" || member.name === "Mohammad Asadi";
 
   return (
-    <div className="flex flex-col items-center text-center p-6 rounded-lg hover:shadow-lg transition-all">
+    <div className={`flex flex-col items-center text-center p-6 rounded-lg hover:shadow-lg transition-all ${needsBottomMargin ? "mt-8" : ""}`}>
       <div className="relative w-48 h-48 mb-4 rounded-full overflow-hidden bg-neutral-200 flex items-center justify-center">
         {showImage ? (
           <Image
