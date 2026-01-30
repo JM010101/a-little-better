@@ -32,6 +32,7 @@ export default function MouseGasEffect() {
   const [particles, setParticles] = useState<Particle[]>([]);
   const animationFrameRef = useRef<number>();
   const lastMousePosRef = useRef({ x: 0, y: 0 });
+  const clickPosRef = useRef<{ x: number; y: number; isRightClick: boolean } | null>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -80,10 +81,90 @@ export default function MouseGasEffect() {
       });
     };
 
+    const handleClick = (e: MouseEvent) => {
+      const isRightClick = e.button === 2 || (e as any).which === 3;
+      
+      // Create explosion particles
+      const explosionSize = isRightClick ? 40 : 20; // Right click = bigger explosion
+      const particleCount = isRightClick ? 50 : 25; // Right click = more particles
+      
+      const explosionParticles: Particle[] = Array.from({ length: particleCount }, (_, i) => {
+        const particleType = PARTICLE_TYPES[Math.floor(Math.random() * PARTICLE_TYPES.length)];
+        const [minSize, maxSize] = particleType.size;
+        const sizeMultiplier = isRightClick ? 2 : 1;
+        const size = (minSize + Math.random() * (maxSize - minSize)) * sizeMultiplier;
+        
+        const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5;
+        const speed = explosionSize * (0.5 + Math.random() * 0.5);
+        
+        return {
+          id: Date.now() + Math.random() + i + 10000,
+          x: e.clientX,
+          y: e.clientY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size,
+          type: particleType.type,
+          color: particleType.color,
+          opacity: 0.9 + Math.random() * 0.1,
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * (isRightClick ? 15 : 10),
+          twinkle: Math.random(),
+        };
+      });
+
+      setParticles((prev) => {
+        const updated = [...prev, ...explosionParticles];
+        return updated.slice(-PARTICLE_COUNT);
+      });
+    };
+
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+      // Create bigger explosion for right click
+      const explosionSize = 40;
+      const particleCount = 50;
+      
+      const explosionParticles: Particle[] = Array.from({ length: particleCount }, (_, i) => {
+        const particleType = PARTICLE_TYPES[Math.floor(Math.random() * PARTICLE_TYPES.length)];
+        const [minSize, maxSize] = particleType.size;
+        const size = (minSize + Math.random() * (maxSize - minSize)) * 2;
+        
+        const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5;
+        const speed = explosionSize * (0.5 + Math.random() * 0.5);
+        
+        return {
+          id: Date.now() + Math.random() + i + 10000,
+          x: e.clientX,
+          y: e.clientY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size,
+          type: particleType.type,
+          color: particleType.color,
+          opacity: 0.9 + Math.random() * 0.1,
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 15,
+          twinkle: Math.random(),
+        };
+      });
+
+      setParticles((prev) => {
+        const updated = [...prev, ...explosionParticles];
+        return updated.slice(-PARTICLE_COUNT);
+      });
+      
+      return false;
+    };
+
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("click", handleClick);
+    window.addEventListener("contextmenu", handleContextMenu);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("click", handleClick);
+      window.removeEventListener("contextmenu", handleClick);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -106,15 +187,20 @@ export default function MouseGasEffect() {
             // Twinkling effect
             const twinkle = 0.5 + Math.sin(time * 3 + p.id) * 0.5;
             
+            // Check if this is an explosion particle (id > 10000)
+            const isExplosion = p.id > 10000;
+            const velocityDecay = isExplosion ? 0.95 : 0.98; // Explosion particles slow down faster
+            const opacityDecay = isExplosion ? 0.97 : 0.995; // Explosion particles fade faster
+            
             return {
               ...p,
-              x: p.x + p.vx + floatX,
-              y: p.y + p.vy + floatY,
-              // Very slow velocity decay - particles drift slowly for longer trail
-              vx: p.vx * 0.98,
-              vy: p.vy * 0.98,
+              x: p.x + p.vx + (isExplosion ? 0 : floatX), // No float for explosions
+              y: p.y + p.vy + (isExplosion ? 0 : floatY),
+              // Velocity decay - explosion particles slow down faster
+              vx: p.vx * velocityDecay,
+              vy: p.vy * velocityDecay,
               rotation: p.rotation + p.rotationSpeed,
-              opacity: p.opacity * 0.995 * twinkle, // Very slow fade for longer trail
+              opacity: p.opacity * opacityDecay * twinkle,
               size: p.size,
               twinkle: twinkle,
             };
