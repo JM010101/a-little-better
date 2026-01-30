@@ -13,8 +13,8 @@ function TeamMemberCard({ member }: { member: TeamMember }) {
   const [imageError, setImageError] = useState(false);
   const isHiring = member.name === "hiring...";
   const showImage = member.image && !imageError && !isHiring;
-  // Adjust image position for Andrea and Mohammad to show their heads properly
-  const needsImageAdjustment = member.name === "Andrea Montrone" || member.name === "Mohammad Asadi";
+  // Adjust image position for Andrea, Mohammad, and Rahul to show their heads properly
+  const needsImageAdjustment = member.name === "Andrea Montrone" || member.name === "Mohammad Asadi" || member.name === "Rahul Singh";
 
   return (
     <div className="flex flex-col items-center text-center p-6 rounded-lg hover:shadow-lg transition-all">
