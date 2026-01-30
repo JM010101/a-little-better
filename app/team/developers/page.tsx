@@ -21,7 +21,7 @@ const developers: TeamMember[] = [
   {
     name: "Rahul Singh",
     role: "Software Engineer",
-    image: "/team/Rahul - Software Engineer.png"
+    image: "/team/Rahul Singh - Software Engineer.png"
   },
   {
     name: "Maheen Mashrur",
