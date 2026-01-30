@@ -84,7 +84,8 @@ function InteractiveLink({ href, name, delay }: { href: string; name: string; de
           }}
           className="rounded-full"
         />
-      </Link>
+        </Link>
+      </animated.div>
     </div>
   );
 }
