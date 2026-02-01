@@ -39,8 +39,8 @@ function TeamMemberCard({ member, index }: { member: TeamMember; index: number }
 
   const isHiring = member.name === "hiring...";
   const showImage = member.image && !imageError && !isHiring;
-  // Adjust image position for Andrea, Mohammad, Rahul, Maheen, Wealth, and Rafael to show their heads properly
-  const needsImageAdjustment = member.name === "Andrea Montrone" || member.name === "Mohammad Asadi" || member.name === "Rahul Singh" || member.name === "Maheen Mashrur" || member.name === "Wealth Hajoh" || member.name === "Rafael Silverio";
+  // Adjust image position for Andrea, Mohammad, Rahul, Maheen, Wealth, Rafael, and Jay to show their heads properly
+  const needsImageAdjustment = member.name === "Andrea Montrone" || member.name === "Mohammad Asadi" || member.name === "Rahul Singh" || member.name === "Maheen Mashrur" || member.name === "Wealth Hajoh" || member.name === "Rafael Silverio" || member.name === "Jay Mehta";
 
   const cardAnimation = useSpring({
     opacity: isVisible ? 1 : 0,
