@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send } from "lucide-react";
+import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSpring, animated } from "@react-spring/web";
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,8 @@ export default function Chatbot() {
     }
   ]);
   const [inputValue, setInputValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -23,25 +26,57 @@ export default function Chatbot() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
+  const handleSend = async () => {
+    if (!inputValue.trim() || isLoading) return;
 
-    const userMessage = { text: inputValue, sender: "user" as const };
+    const userMessage = { text: inputValue.trim(), sender: "user" as const };
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
+    setIsLoading(true);
+    setError(null);
 
-    // Simulate bot response
-    setTimeout(() => {
-      const botResponses = [
-        "Thank you for your message! Our team will get back to you soon.",
-        "That's a great question! Let me help you with that.",
-        "I understand. Would you like to schedule a consultation?",
-        "Thanks for reaching out! We're here to help make things a little better for you.",
-        "I'd be happy to assist you with that. Can you provide more details?"
-      ];
-      const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
-      setMessages((prev) => [...prev, { text: randomResponse, sender: "bot" }]);
-    }, 1000);
+    try {
+      // Prepare messages for API (excluding the initial greeting)
+      const messagesForAPI = [
+        ...messages.slice(1), // Skip initial greeting
+        userMessage
+      ].map(msg => ({
+        text: msg.text,
+        sender: msg.sender
+      }));
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: messagesForAPI,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.response) {
+        setMessages((prev) => [...prev, { text: data.response, sender: "bot" }]);
+      } else {
+        // Use fallback response if available, otherwise show error
+        const errorMessage = data.response || data.error || "I'm sorry, I couldn't process your request. Please try again or contact us at founder@a-little-better.com.";
+        setMessages((prev) => [...prev, { text: errorMessage, sender: "bot" }]);
+        if (data.error && !data.response) {
+          setError("There was an issue connecting to the AI service.");
+        }
+      }
+    } catch (error) {
+      console.error("Chat error:", error);
+      setMessages((prev) => [...prev, { 
+        text: "I apologize, but I'm having trouble connecting right now. Please try again in a moment, or feel free to contact us directly at founder@a-little-better.com.", 
+        sender: "bot" 
+      }]);
+      setError("Connection error. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -83,22 +118,46 @@ export default function Chatbot() {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                    message.sender === "user"
-                      ? "bg-blue-600 text-white"
-                      : "bg-neutral-100 text-neutral-900"
-                  }`}
+            {messages.map((message, index) => {
+              const messageAnimation = useSpring({
+                from: { opacity: 0, transform: "translateY(10px)" },
+                to: { opacity: 1, transform: "translateY(0px)" },
+                config: { tension: 200, friction: 20 },
+              });
+              
+              return (
+                <animated.div
+                  key={index}
+                  className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                  style={messageAnimation}
                 >
-                  <p className="text-sm">{message.text}</p>
+                  <div
+                    className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                      message.sender === "user"
+                        ? "bg-blue-600 text-white"
+                        : "bg-neutral-100 text-neutral-900"
+                    }`}
+                  >
+                    <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                  </div>
+                </animated.div>
+              );
+            })}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-neutral-100 text-neutral-900 rounded-lg px-4 py-2 max-w-[80%]">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm">Thinking...</span>
+                  </div>
                 </div>
               </div>
-            ))}
+            )}
+            {error && (
+              <div className="text-xs text-red-500 text-center px-4">
+                {error}
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
 
@@ -117,12 +176,17 @@ export default function Chatbot() {
                 onClick={handleSend}
                 className="bg-blue-600 hover:bg-blue-700"
                 size="icon"
+                disabled={isLoading || !inputValue.trim()}
               >
-                <Send className="h-4 w-4" />
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
               </Button>
             </div>
             <p className="text-xs text-neutral-500 mt-2 text-center">
-              We typically reply within a few minutes
+              AI-powered assistant • Available 24/7
             </p>
           </div>
         </div>
