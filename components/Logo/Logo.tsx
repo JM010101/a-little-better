@@ -22,7 +22,6 @@ export default function Logo({ size, withText }: LogoProps) {
           alt="Logo A Little Better Software Studio"
           fill
           priority
-          unoptimized
         />
       </div>
       {withText && <p className="text-lg font-semibold">A Little Better</p>}
