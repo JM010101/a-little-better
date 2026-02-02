@@ -55,12 +55,6 @@ export default function DisableDevTools() {
       }
     };
 
-    // Disable text selection (optional)
-    const handleSelectStart = (e: Event) => {
-      e.preventDefault();
-      return false;
-    };
-
     // Disable drag
     const handleDragStart = (e: DragEvent) => {
       e.preventDefault();
@@ -70,14 +64,12 @@ export default function DisableDevTools() {
     // Add event listeners
     document.addEventListener("contextmenu", handleContextMenu);
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("selectstart", handleSelectStart);
     document.addEventListener("dragstart", handleDragStart);
 
     // Cleanup
     return () => {
       document.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("selectstart", handleSelectStart);
       document.removeEventListener("dragstart", handleDragStart);
     };
   }, []);
