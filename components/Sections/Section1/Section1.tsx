@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { dataLeft, dataRight } from "./data";
 import Link from "next/link";
+import Image from "next/image";
 import { useSpring, animated } from "@react-spring/web";
 import { useRef, useEffect, useState } from "react";
 
@@ -21,13 +22,14 @@ export default function Section1() {
       { threshold: 0.1 }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
+    const currentRef = ref.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, []);
@@ -43,11 +45,13 @@ export default function Section1() {
       <div className="w-full max-w-[1200px] md:grid grid-cols-8">
         <div className="col-span-2 text-center md:h-[500px] flex md:flex-col justify-center gap-10 md:gap-0 md:justify-around items-center mb-6 md:mb-0">
           {dataLeft.map(({ src, alt }, index) => (
-            <img
+            <Image
               key={index}
               src={src}
               alt={alt}
-              className="max-h-[75px] md:max-h-[150px]"
+              width={150}
+              height={150}
+              className="max-h-[75px] md:max-h-[150px] w-auto h-auto object-contain"
             />
           ))}
         </div>
@@ -66,11 +70,13 @@ export default function Section1() {
         </animated.div>
         <div className="col-span-2 text-center md:h-[500px] flex md:flex-col justify-center gap-10 md:gap-0 md:justify-around items-center mt-6 md:mt-0">
           {dataRight.map(({ src, alt }, index) => (
-            <img
+            <Image
               key={index}
               src={src}
               alt={alt}
-              className="max-h-[75px] md:max-h-[150px]"
+              width={150}
+              height={150}
+              className="max-h-[75px] md:max-h-[150px] w-auto h-auto object-contain"
             />
           ))}
         </div>
