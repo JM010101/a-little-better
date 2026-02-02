@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     // Prepare request body - Cloudflare Workers AI expects messages array
     const requestBody = {
       messages: formattedMessages,
-      max_tokens: 500,
+      max_tokens: 250, // Reduced from 500 to keep responses concise
       temperature: 0.7,
     };
 
