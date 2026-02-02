@@ -69,7 +69,7 @@ function InteractiveLink({ href, name, delay }: { href: string; name: string; de
       >
         <Link
           href={href}
-          className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors relative inline-block"
+          className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors relative inline-block"
         >
         {name}
         <animated.div

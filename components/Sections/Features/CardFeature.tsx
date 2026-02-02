@@ -44,11 +44,11 @@ export default function CardFeature({
       <Link href={href}>
         <animated.div 
           style={hoverAnimation}
-          className="flex flex-col justify-start items-center rounded-lg border bg-neutral-50 transition-all cursor-pointer"
+          className="flex flex-col justify-start items-center rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 transition-all cursor-pointer"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <div className="w-full rounded-t-lg h-[180px] bg-white border-b overflow-hidden relative">
+          <div className="w-full rounded-t-lg h-[180px] bg-white dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 overflow-hidden relative">
             {imageSrc && (
               <Image
                 src={imageSrc}
@@ -61,9 +61,9 @@ export default function CardFeature({
           <div className="flex flex-col justify-start items-start w-full py-2 px-4">
             <div className="flex flex-row justify-start items-center gap-1">
               {icon}
-              <p className="text-lg font-medium">{title}</p>
+              <p className="text-lg font-medium text-neutral-900 dark:text-neutral-100">{title}</p>
             </div>
-            <p className="text-neutral-500">{description}</p>
+            <p className="text-neutral-500 dark:text-neutral-400">{description}</p>
           </div>
         </animated.div>
       </Link>

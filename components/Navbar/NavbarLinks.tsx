@@ -35,7 +35,7 @@ export default function NavbarLinks() {
         </MenubarContent>
       </MenubarMenu>
       {/* Blog */}
-      <Link href="/blog" className="flex items-center rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-50 hover:text-blue-500 transition-all">
+      <Link href="/blog" className="flex items-center rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
         Blog
       </Link>
       {/* Team */}
@@ -51,7 +51,7 @@ export default function NavbarLinks() {
         </MenubarContent>
       </MenubarMenu>
       {/* Contact */}
-      <Link href="/contact" className="flex items-center rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-50 hover:text-blue-500 transition-all">
+      <Link href="/contact" className="flex items-center rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
         Contact
       </Link>
     </Menubar>

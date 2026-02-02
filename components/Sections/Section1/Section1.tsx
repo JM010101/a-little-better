@@ -55,11 +55,11 @@ export default function Section1() {
             />
           ))}
         </div>
-        <animated.div style={contentAnimation} className="col-span-4 bg-white flex flex-col justify-center items-center">
-          <p className="text-4xl font-medium text-center mx-10 md:mx-0">
+        <animated.div style={contentAnimation} className="col-span-4 bg-white dark:bg-transparent flex flex-col justify-center items-center">
+          <p className="text-4xl font-medium text-center mx-10 md:mx-0 text-neutral-900 dark:text-neutral-100">
             The devil is in the details.
           </p>
-          <p className="text-neutral-600 text-xl text-center mx-20 md:mx-6 my-8">
+          <p className="text-neutral-600 dark:text-neutral-400 text-xl text-center mx-20 md:mx-6 my-8">
             Stop wasting time. Get started today.
           </p>
           <Link href="/contact">

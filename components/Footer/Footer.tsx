@@ -49,7 +49,7 @@ export default function Footer() {
   return (
     <div 
       ref={footerRef}
-      className="bg-neutral-100 border-t flex flex-col justify-center items-center relative overflow-hidden"
+      className="bg-neutral-100 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 flex flex-col justify-center items-center relative overflow-hidden"
     >
       {/* Interactive glow effect */}
       <animated.div
@@ -74,16 +74,16 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <Logo size="h-10 w-10" withText />
             <div className="flex flex-col gap-3 max-w-md">
-              <p className="text-neutral-600 italic">
+              <p className="text-neutral-600 dark:text-neutral-400 italic">
                 &ldquo;Rome wasn&apos;t built in a day, but they were laying bricks every hour.&rdquo;
               </p>
-              <p className="text-neutral-600 italic">
+              <p className="text-neutral-600 dark:text-neutral-400 italic">
                 &ldquo;Every little bit helps. A penny saved is a penny earned.&rdquo;
               </p>
-              <p className="text-neutral-600 italic">
+              <p className="text-neutral-600 dark:text-neutral-400 italic">
                 &ldquo;Slow and steady wins the race.&rdquo;
               </p>
-              <p className="text-neutral-600 italic">
+              <p className="text-neutral-600 dark:text-neutral-400 italic">
                 &ldquo;It&apos;s the little things that make the big difference.&rdquo;
               </p>
             </div>
@@ -94,7 +94,7 @@ export default function Footer() {
             ))}
           </div>
         </div>
-        <p className="text-sm text-neutral-500 text-center border-t pt-6">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center border-t border-neutral-200 dark:border-neutral-800 pt-6">
           © 2026 A Little Better. All rights reserved.
         </p>
       </div>

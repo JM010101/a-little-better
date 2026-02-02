@@ -106,11 +106,11 @@ export default function Features() {
   return (
     <>
       <div ref={ref} className="mt-28 mb-20 flex flex-col justify-start items-center mx-6 md:mx-0 ">
-        <div className="col-span-4 bg-white flex flex-col justify-center items-center">
-          <animated.p style={titleAnimation} className="text-4xl font-medium text-center">
+        <div className="col-span-4 bg-white dark:bg-transparent flex flex-col justify-center items-center">
+          <animated.p style={titleAnimation} className="text-4xl font-medium text-center text-neutral-900 dark:text-neutral-100">
             Our Products
           </animated.p>
-          <animated.p style={subtitleAnimation} className="text-neutral-600 text-xl text-center max-w-[700px] mt-4">
+          <animated.p style={subtitleAnimation} className="text-neutral-600 dark:text-neutral-400 text-xl text-center max-w-[700px] mt-4">
             These are the products we&apos;ve created. Please browse our website to find similar products and contact us.
           </animated.p>
         </div>

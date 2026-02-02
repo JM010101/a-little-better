@@ -6,7 +6,7 @@ import UsersCloud from "@/components/Users/UsersCloud";
 
 export default function Home() {
   return (
-    <main>
+    <main className="bg-white dark:bg-neutral-950 min-h-screen">
       <Hero />
       <UsersCloud />
       <Section1 />

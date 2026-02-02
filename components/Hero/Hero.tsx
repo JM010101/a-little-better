@@ -41,13 +41,13 @@ export default function Hero() {
       <div className="flex flex-col justify-start items-center mt-20">
         <animated.h1 
           style={titleAnimation}
-          className="text-6xl font-medium mt-8 text-center max-w-[600px]"
+          className="text-6xl font-medium mt-8 text-center max-w-[600px] text-neutral-900 dark:text-neutral-100"
         >
           A Little Better Goes a Long Way
         </animated.h1>
         <animated.div 
           style={subtitleAnimation}
-          className="flex flex-col justify-center items-center mt-7 gap-2 text-2xl text-neutral-500 text-center max-w-[700px]"
+          className="flex flex-col justify-center items-center mt-7 gap-2 text-2xl text-neutral-500 dark:text-neutral-400 text-center max-w-[700px]"
         >
           <h2>
             Bring your ideas to life in the digital world using modern tools, strategy, and innovation.

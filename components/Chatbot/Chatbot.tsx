@@ -35,8 +35,8 @@ function ChatMessage({ message }: ChatMessageProps) {
       <div
         className={`max-w-[80%] rounded-lg px-4 py-2 ${
           message.sender === "user"
-            ? "bg-blue-600 text-white"
-            : "bg-neutral-100 text-neutral-900"
+            ? "bg-blue-600 dark:bg-blue-700 text-white"
+            : "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
         }`}
       >
         <p className="text-sm whitespace-pre-wrap">{message.text}</p>
@@ -172,9 +172,9 @@ export default function Chatbot() {
       )}
 
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-white border border-neutral-200 rounded-lg shadow-2xl flex flex-col z-[9999] pointer-events-auto">
+        <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-2xl flex flex-col z-[9999] pointer-events-auto">
           {/* Header */}
-          <div className="bg-blue-600 text-white p-4 rounded-t-lg flex items-center justify-between">
+          <div className="bg-blue-600 dark:bg-blue-700 text-white p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center gap-3">
               <animated.div
                 onMouseEnter={() => setIsHeaderAvatarHovered(true)}
@@ -210,7 +210,7 @@ export default function Chatbot() {
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-neutral-100 text-neutral-900 rounded-lg px-4 py-2 max-w-[80%]">
+                <div className="bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 rounded-lg px-4 py-2 max-w-[80%]">
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span className="text-sm">Thinking...</span>
@@ -227,7 +227,7 @@ export default function Chatbot() {
           </div>
 
           {/* Input */}
-          <div className="border-t border-neutral-200 p-4">
+          <div className="border-t border-neutral-200 dark:border-neutral-800 p-4">
             <div className="flex gap-2">
               <input
                 type="text"
@@ -235,7 +235,7 @@ export default function Chatbot() {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
-                className="flex-1 px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-4 py-2 border border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <Button
                 onClick={handleSend}
