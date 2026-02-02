@@ -5,6 +5,35 @@ import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSpring, animated } from "@react-spring/web";
 
+interface ChatMessageProps {
+  message: { text: string; sender: "user" | "bot" };
+}
+
+function ChatMessage({ message }: ChatMessageProps) {
+  const messageAnimation = useSpring({
+    from: { opacity: 0, transform: "translateY(10px)" },
+    to: { opacity: 1, transform: "translateY(0px)" },
+    config: { tension: 200, friction: 20 },
+  });
+
+  return (
+    <animated.div
+      className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+      style={messageAnimation}
+    >
+      <div
+        className={`max-w-[80%] rounded-lg px-4 py-2 ${
+          message.sender === "user"
+            ? "bg-blue-600 text-white"
+            : "bg-neutral-100 text-neutral-900"
+        }`}
+      >
+        <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+      </div>
+    </animated.div>
+  );
+}
+
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Array<{ text: string; sender: "user" | "bot" }>>([
@@ -118,31 +147,9 @@ export default function Chatbot() {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message, index) => {
-              const messageAnimation = useSpring({
-                from: { opacity: 0, transform: "translateY(10px)" },
-                to: { opacity: 1, transform: "translateY(0px)" },
-                config: { tension: 200, friction: 20 },
-              });
-              
-              return (
-                <animated.div
-                  key={index}
-                  className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
-                  style={messageAnimation}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                      message.sender === "user"
-                        ? "bg-blue-600 text-white"
-                        : "bg-neutral-100 text-neutral-900"
-                    }`}
-                  >
-                    <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                  </div>
-                </animated.div>
-              );
-            })}
+            {messages.map((message, index) => (
+              <ChatMessage key={index} message={message} />
+            ))}
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-neutral-100 text-neutral-900 rounded-lg px-4 py-2 max-w-[80%]">
