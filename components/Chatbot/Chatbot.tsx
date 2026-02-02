@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Loader2 } from "lucide-react";
+import { X, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSpring, animated } from "@react-spring/web";
+import Image from "next/image";
 
 interface ChatMessageProps {
   message: { text: string; sender: "user" | "bot" };
@@ -18,9 +19,19 @@ function ChatMessage({ message }: ChatMessageProps) {
 
   return (
     <animated.div
-      className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+      className={`flex items-end gap-2 ${message.sender === "user" ? "justify-end" : "justify-start"}`}
       style={messageAnimation}
     >
+      {message.sender === "bot" && (
+        <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+          <Image
+            src="/chatbot_avatar.jpg"
+            alt="Chatbot avatar"
+            fill
+            className="object-cover"
+          />
+        </div>
+      )}
       <div
         className={`max-w-[80%] rounded-lg px-4 py-2 ${
           message.sender === "user"
@@ -120,11 +131,17 @@ export default function Chatbot() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all z-[9999] flex items-center justify-center cursor-pointer pointer-events-auto"
+          className="fixed bottom-6 right-6 bg-white border-2 border-blue-600 rounded-full p-2 shadow-lg hover:shadow-xl transition-all z-[9999] flex items-center justify-center cursor-pointer pointer-events-auto overflow-hidden"
           aria-label="Open chatbot"
           type="button"
         >
-          <MessageCircle className="h-6 w-6" />
+          <Image
+            src="/chatbot_avatar.jpg"
+            alt="Chatbot avatar"
+            width={48}
+            height={48}
+            className="rounded-full object-cover"
+          />
         </button>
       )}
 
@@ -133,7 +150,14 @@ export default function Chatbot() {
           {/* Header */}
           <div className="bg-blue-600 text-white p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5" />
+              <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                <Image
+                  src="/chatbot_avatar.jpg"
+                  alt="Chatbot avatar"
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <h3 className="font-semibold">Chat with us</h3>
             </div>
             <button
