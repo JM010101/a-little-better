@@ -47,6 +47,8 @@ function ChatMessage({ message }: ChatMessageProps) {
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isHeaderAvatarHovered, setIsHeaderAvatarHovered] = useState(false);
   const [messages, setMessages] = useState<Array<{ text: string; sender: "user" | "bot" }>>([
     {
       text: "Hello! How can I help you today?",
@@ -57,6 +59,24 @@ export default function Chatbot() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Glow animation for floating button avatar hover
+  const glowAnimation = useSpring({
+    scale: isHovered ? 1.1 : 1,
+    boxShadow: isHovered 
+      ? "0 0 30px rgba(59, 130, 246, 0.8), 0 0 60px rgba(59, 130, 246, 0.6), 0 0 90px rgba(59, 130, 246, 0.4)"
+      : "0 0 0px rgba(59, 130, 246, 0)",
+    config: { tension: 300, friction: 20 },
+  });
+
+  // Glow animation for header avatar hover
+  const headerGlowAnimation = useSpring({
+    scale: isHeaderAvatarHovered ? 1.15 : 1,
+    boxShadow: isHeaderAvatarHovered 
+      ? "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(255, 255, 255, 0.6), 0 0 75px rgba(255, 255, 255, 0.4)"
+      : "0 0 0px rgba(255, 255, 255, 0)",
+    config: { tension: 300, friction: 20 },
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -129,11 +149,17 @@ export default function Chatbot() {
   return (
     <>
       {!isOpen && (
-        <button
+        <animated.button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 bg-white border-2 border-blue-600 rounded-full p-0 shadow-lg hover:shadow-xl transition-all z-[9999] flex items-center justify-center cursor-pointer pointer-events-auto overflow-hidden"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="fixed bottom-6 right-6 bg-white border-2 border-blue-600 rounded-full p-0 shadow-lg transition-all z-[9999] flex items-center justify-center cursor-pointer pointer-events-auto overflow-hidden"
           aria-label="Open chatbot"
           type="button"
+          style={{
+            transform: glowAnimation.scale.to((s) => `scale(${s})`),
+            boxShadow: glowAnimation.boxShadow,
+          }}
         >
           <Image
             src="/chatbot_avatar.jpg"
@@ -142,7 +168,7 @@ export default function Chatbot() {
             height={80}
             className="rounded-full object-cover"
           />
-        </button>
+        </animated.button>
       )}
 
       {isOpen && (
@@ -150,14 +176,22 @@ export default function Chatbot() {
           {/* Header */}
           <div className="bg-blue-600 text-white p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/20">
+              <animated.div
+                onMouseEnter={() => setIsHeaderAvatarHovered(true)}
+                onMouseLeave={() => setIsHeaderAvatarHovered(false)}
+                className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/20 cursor-pointer"
+                style={{
+                  transform: headerGlowAnimation.scale.to((s) => `scale(${s})`),
+                  boxShadow: headerGlowAnimation.boxShadow,
+                }}
+              >
                 <Image
                   src="/chatbot_avatar.jpg"
                   alt="Chatbot avatar"
                   fill
                   className="object-cover"
                 />
-              </div>
+              </animated.div>
               <h3 className="font-semibold">Chat with us</h3>
             </div>
             <button
