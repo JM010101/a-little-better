@@ -53,7 +53,22 @@ export async function POST(request: NextRequest) {
     ];
 
     // Call Cloudflare Workers AI
+    // Note: The endpoint format is: /accounts/{account_id}/ai/run/{model_name}
     const cloudflareUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/@cf/meta/llama-3.1-8b-instruct-fast`;
+
+    // Prepare request body - Cloudflare Workers AI expects messages array
+    const requestBody = {
+      messages: formattedMessages,
+      max_tokens: 500,
+      temperature: 0.7,
+    };
+
+    console.log("Making Cloudflare AI request:", {
+      url: cloudflareUrl,
+      method: "POST",
+      messageCount: formattedMessages.length,
+      hasSystemPrompt: formattedMessages.some((m: any) => m.role === "system"),
+    });
 
     const aiResponse = await fetch(cloudflareUrl, {
       method: "POST",
@@ -61,11 +76,7 @@ export async function POST(request: NextRequest) {
         "Authorization": `Bearer ${apiToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        messages: formattedMessages,
-        max_tokens: 500,
-        temperature: 0.7,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!aiResponse.ok) {

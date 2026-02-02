@@ -21,10 +21,14 @@ CLOUDFLARE_API_TOKEN=your_api_token_here
 2. **Create API Token:**
    - Go to Cloudflare Dashboard → My Profile → API Tokens
    - Click "Create Token"
-   - Use the "Edit Cloudflare Workers" template or create a custom token with:
-     - Permissions: `Account` → `Cloudflare Workers AI` → `Read`
-     - Account Resources: Include your account
-   - Copy the token (you won't be able to see it again)
+   - **IMPORTANT**: Use the "Edit Cloudflare Workers" template OR create a custom token with:
+     - **Permissions**: 
+       - `Account` → `Cloudflare Workers AI` → `Read` (REQUIRED)
+       - `Account` → `Workers Scripts` → `Edit` (may also be needed)
+     - **Account Resources**: Include your account (select "Include All accounts" or your specific account)
+   - **Note**: The token must have Workers AI permissions specifically - general API tokens won't work
+   - Copy the token immediately (you won't be able to see it again)
+   - If you get 401 errors, try creating a new token with explicit Workers AI permissions
 
 ### Adding to Vercel
 
