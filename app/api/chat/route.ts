@@ -19,12 +19,22 @@ export async function POST(request: NextRequest) {
     const apiToken = process.env.CLOUDFLARE_API_TOKEN;
 
     if (!accountId || !apiToken) {
-      console.error("Cloudflare credentials not configured");
+      console.error("Cloudflare credentials not configured", {
+        hasAccountId: !!accountId,
+        hasApiToken: !!apiToken,
+      });
       return NextResponse.json(
         { error: "AI service is not configured. Please contact support." },
         { status: 500 }
       );
     }
+
+    // Log token format (first few chars only for security)
+    console.log("Cloudflare API setup:", {
+      accountId: accountId ? `${accountId.substring(0, 8)}...` : "missing",
+      tokenPrefix: apiToken ? `${apiToken.substring(0, 8)}...` : "missing",
+      tokenLength: apiToken?.length || 0,
+    });
 
     // Get system prompt
     const systemPrompt = getSystemPrompt();
@@ -60,13 +70,37 @@ export async function POST(request: NextRequest) {
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
+      let errorDetails;
+      try {
+        errorDetails = JSON.parse(errorText);
+      } catch {
+        errorDetails = { error: errorText };
+      }
+
       console.error("Cloudflare AI API error:", {
         status: aiResponse.status,
         statusText: aiResponse.statusText,
-        error: errorText,
+        error: errorDetails,
+        accountIdSet: !!accountId,
+        tokenSet: !!apiToken,
+        tokenLength: apiToken?.length || 0,
       });
 
-      // Return friendly error message
+      // Provide specific error message for 401
+      if (aiResponse.status === 401) {
+        return NextResponse.json(
+          { 
+            error: "Authentication failed. Please check Cloudflare credentials.",
+            response: "I apologize, but there's an authentication issue with the AI service. Please contact the administrator to verify the Cloudflare API credentials are correctly configured.",
+            details: process.env.NODE_ENV === "development" ? {
+              message: "Check that CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN are set correctly. The API token needs 'Account' → 'Cloudflare Workers AI' → 'Read' permissions."
+            } : undefined
+          },
+          { status: 500 }
+        );
+      }
+
+      // Return friendly error message for other errors
       return NextResponse.json(
         { 
           error: "I'm having trouble processing your request right now. Please try again in a moment.",
