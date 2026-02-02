@@ -23,7 +23,7 @@ function ChatMessage({ message }: ChatMessageProps) {
       style={messageAnimation}
     >
       {message.sender === "bot" && (
-        <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+        <div className="relative w-14 h-14 rounded-full overflow-hidden flex-shrink-0">
           <Image
             src="/chatbot_avatar.jpg"
             alt="Chatbot avatar"
@@ -131,15 +131,15 @@ export default function Chatbot() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 bg-white border-2 border-blue-600 rounded-full p-1 shadow-lg hover:shadow-xl transition-all z-[9999] flex items-center justify-center cursor-pointer pointer-events-auto overflow-hidden"
+          className="fixed bottom-6 right-6 bg-white border-2 border-blue-600 rounded-full p-0 shadow-lg hover:shadow-xl transition-all z-[9999] flex items-center justify-center cursor-pointer pointer-events-auto overflow-hidden"
           aria-label="Open chatbot"
           type="button"
         >
           <Image
             src="/chatbot_avatar.jpg"
             alt="Chatbot avatar"
-            width={64}
-            height={64}
+            width={80}
+            height={80}
             className="rounded-full object-cover"
           />
         </button>
@@ -150,7 +150,7 @@ export default function Chatbot() {
           {/* Header */}
           <div className="bg-blue-600 text-white p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/20">
+              <div className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/20">
                 <Image
                   src="/chatbot_avatar.jpg"
                   alt="Chatbot avatar"
