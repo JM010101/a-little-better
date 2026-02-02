@@ -33,9 +33,9 @@ function ChatMessage({ message }: ChatMessageProps) {
         </div>
       )}
       <div
-        className={`max-w-[80%] rounded-lg px-4 py-2 ${
+            className={`max-w-[80%] rounded-lg px-4 py-2 ${
           message.sender === "user"
-            ? "bg-blue-600 dark:bg-blue-700 text-white"
+            ? "bg-purple-600 dark:bg-purple-700 text-white"
             : "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
         }`}
       >
@@ -64,8 +64,8 @@ export default function Chatbot() {
   const glowAnimation = useSpring({
     scale: isHovered ? 1.1 : 1,
     boxShadow: isHovered 
-      ? "0 0 30px rgba(59, 130, 246, 0.8), 0 0 60px rgba(59, 130, 246, 0.6), 0 0 90px rgba(59, 130, 246, 0.4)"
-      : "0 0 0px rgba(59, 130, 246, 0)",
+      ? "0 0 30px rgba(147, 51, 234, 0.8), 0 0 60px rgba(147, 51, 234, 0.6), 0 0 90px rgba(147, 51, 234, 0.4)"
+      : "0 0 0px rgba(147, 51, 234, 0)",
     config: { tension: 300, friction: 20 },
   });
 
@@ -153,7 +153,7 @@ export default function Chatbot() {
           onClick={() => setIsOpen(true)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="fixed bottom-6 right-6 bg-white border-2 border-blue-600 rounded-full p-0 shadow-lg transition-all z-[9999] flex items-center justify-center cursor-pointer pointer-events-auto overflow-hidden"
+          className="fixed bottom-6 right-6 bg-white border-2 border-purple-600 dark:border-purple-500 rounded-full p-0 shadow-lg transition-all z-[9999] flex items-center justify-center cursor-pointer pointer-events-auto overflow-hidden"
           aria-label="Open chatbot"
           type="button"
           style={{
@@ -174,7 +174,7 @@ export default function Chatbot() {
       {isOpen && (
         <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-2xl flex flex-col z-[9999] pointer-events-auto">
           {/* Header */}
-          <div className="bg-blue-600 dark:bg-blue-700 text-white p-4 rounded-t-lg flex items-center justify-between">
+          <div className="bg-purple-600 dark:bg-purple-700 text-white p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center gap-3">
               <animated.div
                 onMouseEnter={() => setIsHeaderAvatarHovered(true)}
@@ -196,7 +196,7 @@ export default function Chatbot() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="hover:bg-blue-700 rounded-full p-1 transition-colors"
+              className="hover:bg-purple-700 rounded-full p-1 transition-colors"
               aria-label="Close chatbot"
             >
               <X className="h-5 w-5" />
@@ -235,11 +235,11 @@ export default function Chatbot() {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
-                className="flex-1 px-4 py-2 border border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-4 py-2 border border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
               <Button
                 onClick={handleSend}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-purple-600 hover:bg-purple-700"
                 size="icon"
                 disabled={isLoading || !inputValue.trim()}
               >
