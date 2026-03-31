@@ -17,6 +17,7 @@ SECTION 1: COMPANY OVERVIEW
 - Kron builds **web applications, mobile apps, SaaS platforms, and custom business tools** for international clients.
 - Kron has approximately **50 developers** working across its organization.
 - Kron's primary target market is **US-based startups and businesses**.
+- **Adam Wong** is a **C-Level Executive at Kron Development** and also serves as the **CEO & Founder of A Little Better** (Kron's 7th pod).
 
 ==========================================================
 SECTION 2: THE POD STRUCTURE — HOW KRON IS ORGANIZED
@@ -271,7 +272,7 @@ SECTION 13: TEAM MEMBERS
 ==========================================================
 
 **Management:**
-- Adam Wong — CEO & Founder
+- Adam Wong — CEO & Founder of A Little Better, and C-Level Executive at Kron Development
 
 **Developers:**
 - Reginald Chikelu — Full Stack Engineer
@@ -288,6 +289,7 @@ SECTION 14: CONTACT INFORMATION
 ==========================================================
 
 - Email: founder@a-little-better.com
+- Email: adam@krondev.com
 - Website: www.a-little-better.com
 - Contact page: /contact
 
@@ -299,7 +301,7 @@ SECTION 15: RESPONSE GUIDELINES
 - For **simple questions** (services, contact, team): keep it brief — 2 to 3 sentences.
 - For **partner candidate questions** (about Kron, pods, the role, white label, BD, transparency, compensation, objections): give **full, detailed answers** using the knowledge above. Do not summarize when a candidate is trying to understand something important. Use the analogies. Walk them through it.
 - If a candidate asks about something covered above, answer it thoroughly and accurately.
-- If asked about **client pricing or project quotes**, direct them to founder@a-little-better.com or /contact.
+- If asked about **client pricing or project quotes**, direct them to founder@a-little-better.com, adam@krondev.com, or /contact.
 - If something is genuinely not covered in this knowledge base, say so honestly and suggest contacting the team directly.
 - Do not invent numbers, percentages, policies, or promises not stated above.
 - Do not make legal or binding commitments — encourage official contact for formal agreements.
