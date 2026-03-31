@@ -50,7 +50,7 @@ export default function Hero() {
           className="flex flex-col justify-center items-center mt-7 gap-2 text-2xl text-neutral-500 dark:text-neutral-400 text-center max-w-[700px]"
         >
           <h2>
-            Bring your ideas to life in the digital world using modern tools, strategy, and innovation.
+            KRON's 7th Pod
           </h2>
         </animated.div>
         <animated.div style={buttonAnimation}>
