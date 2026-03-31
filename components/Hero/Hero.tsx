@@ -49,9 +49,7 @@ export default function Hero() {
           style={subtitleAnimation}
           className="flex flex-col justify-center items-center mt-7 gap-2 text-2xl text-neutral-500 dark:text-neutral-400 text-center max-w-[700px]"
         >
-          <h2>
-            KRON's 7th Pod
-          </h2>
+          <h2>{"KRON's 7th Pod"}</h2>
         </animated.div>
         <animated.div style={buttonAnimation}>
           <Link href="/contact">
